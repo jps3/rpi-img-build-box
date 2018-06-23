@@ -1,0 +1,14 @@
+---
+# common / tasks / apt
+
+- name: Update apt cache and upgrade as needed
+  apt: 
+    update_cache: yes
+    upgrade: yes
+    cache_valid_time: "{{ (max_apt_cache_age_hours * 60 * 60) | int | abs }}"
+
+- name: Install common packages
+  apt:
+    name: "{{ item }}"
+  with_items: "{{ common_packages }}"
+

@@ -1,0 +1,17 @@
+# /etc/systemd/system/set-unique-hostname-before-network.service
+
+[Unit]
+DefaultDependencies=false
+#ConditionPathExists=|!/etc/hostname
+Before=network-pre.target
+Wants=network-pre.target
+After=local-fs.target
+After=sys-subsystem-net-devices-eth0.device
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash -c "/usr/local/sbin/set-unique-hostname-before-network.sh"
+RemainAfterExit=yes
+
+[Install]
+WantedBy=network.target

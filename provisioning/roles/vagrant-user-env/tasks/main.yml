@@ -1,0 +1,32 @@
+---
+# vagrant-user-env / tasks / main
+
+- name: Git clone bash-it repo
+  git: 
+    repo: "{{ bash_it_repo }}"
+    version: "master"
+    depth: 1
+    dest: "~/.bash_it"
+  become_user: vagrant
+  become: yes
+
+# TODO: This should only run if not run before.
+#       (do not yet know how to implement this check)
+- name: Run bash-it installer
+  shell: "~/.bash_it/install.sh --silent"
+  become_user: vagrant
+  become: yes
+  register: bash_it_installed
+
+- name: Create build directory
+  file:
+    path: "~/build"
+    state: directory
+  become_user: vagrant
+  become: yes
+
+- name: Add vagrant to group docker
+  user:
+    name: vagrant
+    groups: docker
+  when: result_install_docker_packages is success

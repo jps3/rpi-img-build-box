@@ -1,0 +1,24 @@
+---
+# docker-ce / vars / main
+
+support_packages:
+  - apt-transport-https
+  - ca-certificates
+  - curl
+  - gnupg2
+  - software-properties-common
+
+repo_key:
+  id: "8D81803C0EBFCD88"
+  url: "https://download.docker.com/linux/debian/gpg"
+
+repo_arch: "{{ 'amd64' if ansible_architecture == 'x86_64' }}"
+
+repo_url: "https://download.docker.com/linux/debian"
+
+docker_packages:
+  - docker-ce
+
+python_tools:
+  - docker-compose
+

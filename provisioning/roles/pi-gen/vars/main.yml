@@ -1,0 +1,22 @@
+---
+# pi-gen / vars
+
+pi_gen_support_packages:
+  - bsdtar
+  - curl
+  - debootstrap
+  - dosfstools
+  - grep
+  - libcap2-bin
+  - pxz
+  - qemu-user-static
+  - quilt
+  - realpath
+  - rsync
+  - udev
+  - xxd
+  - xz-utils
+  - zerofree
+  - zip
+
+pi_gen_repo: "https://github.com/RPi-distro/pi-gen.git"

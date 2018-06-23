@@ -1,0 +1,39 @@
+---
+# docker-ce / tasks / debian
+
+# 
+# Docker-CE installations instructions reference page:
+# 
+# https://docs.docker.com/install/linux/docker-ce/debian/#install-using-the-repository
+# 
+
+- name: Install packages required to support docker-ce
+  apt:
+    name: "{{ item }}"
+  with_items: "{{ support_packages }}"
+  register: result_docker_ce_support_packages
+
+- name: Add apt key for docker repo
+  apt_key:
+    id: "{{ repo_key. id }}"
+    url: "{{ repo_key.url }}"
+  register: result_add_apt_key
+
+- name: Add apt docker repo
+  apt_repository: 
+    repo: >
+      deb 
+      [arch="{{ repo_arch }}"] 
+      "{{ repo_url }}"
+      "{{ ansible_distribution_release }}" 
+      stable
+    update_cache: yes
+  register: result_add_apt_repo
+  when: result_add_apt_key is success
+
+- name: Install docker-ce package(s)
+  apt:
+    name: "{{ item }}"
+  with_items: "{{ docker_packages }}"
+  register: result_install_docker_packages
+  when: result_add_apt_repo is success

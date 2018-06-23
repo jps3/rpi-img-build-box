@@ -1,0 +1,4 @@
+---
+# vagrant-user-env / vars / main
+
+bash_it_repo: "https://github.com/Bash-it/bash-it.git"

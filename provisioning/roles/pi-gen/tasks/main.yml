@@ -1,0 +1,25 @@
+---
+# pi-gen / tasks
+
+- name: Install pi-gen support packages
+  include_tasks: debian.yml
+  when: ansible_distribution == 'Debian'
+
+- name: Git clone pi-gen repo
+  git: 
+    repo: "{{ pi_gen_repo }}"
+    version: "master"
+    depth: 1
+    dest: "~/build/pi-gen"
+  become_user: vagrant
+  become: yes
+  register: result_repo
+
+- name: Handle apt-cacher-ng archive if file exists
+  include_tasks: apt-cacher-ng-archive.yml
+  when: result_repo is success
+
+- name: Build and run pi-gen Docker container(s)
+  docker_service:
+    project_src: "/home/vagrant/build/pi-gen/"
+  when: result_docker_service_running is success

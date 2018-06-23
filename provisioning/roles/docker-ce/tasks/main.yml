@@ -1,0 +1,27 @@
+---
+# docker-ce / tasks / main
+
+- name: Run {{ ansible_distribution }}-specific tasks for installing docker-ce
+  include_tasks: debian.yml
+  when: >
+    ansible_distribution == 'Debian' 
+      and 
+    ( 
+      ansible_lsb.major_release | int == 8 
+      or 
+      ansible_lsb.major_release | int == 9 
+    )
+
+- name: Install python docker tools
+  pip:
+    name: "{{ item }}"
+  with_items: "{{ python_tools }}"
+
+- name: Ensure docker service is enabled and running
+  service:
+    name: docker
+    state: started
+    enabled: yes
+  register: result_docker_service_running
+
+# TODO: Run a Hello World docker image as a test.

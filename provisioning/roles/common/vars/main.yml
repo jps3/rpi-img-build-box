@@ -1,0 +1,24 @@
+---
+# common / vars
+
+max_apt_cache_age_hours: 2
+
+common_packages:
+  - apt-transport-https
+  - debian-goodies
+  - git
+  - htop
+  - jq
+  - kpartx
+  - nvi
+  - parted
+  - pv
+  - python
+  - python-passlib
+  - qemu
+  - qemu-user-static
+  - rsync
+  - systemd-container
+  - unzip
+
+

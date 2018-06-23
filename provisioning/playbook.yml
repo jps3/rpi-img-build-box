@@ -1,0 +1,13 @@
+---
+- hosts: all
+  become: yes
+  remote_user: vagrant
+  become_method: sudo
+  become_user: root
+
+  roles:
+    - common
+    - docker-ce
+    - pi-gen
+    #- linux-kernel-cross-compiler
+    - vagrant-user-env
