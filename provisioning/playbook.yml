@@ -11,3 +11,4 @@
     - pi-gen
     #- linux-kernel-cross-compiler
     - vagrant-user-env
+    - img-workspace

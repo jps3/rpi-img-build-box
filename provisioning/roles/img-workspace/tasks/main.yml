@@ -1,0 +1,14 @@
+---
+# img-workspace/tasks/main.yml
+
+- name: Create img-workspace build directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "~/build/img-workspace"
+    - "~/build/img-workspace/rootfs"
+    - "~/build/img-workspace/rootfs/boot"
+  become_user: vagrant
+  become: yes
+

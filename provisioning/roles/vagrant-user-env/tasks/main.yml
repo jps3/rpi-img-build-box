@@ -2,7 +2,7 @@
 # vagrant-user-env / tasks / main
 
 - name: Git clone bash-it repo
-  git: 
+  git:
     repo: "{{ bash_it_repo }}"
     version: "master"
     depth: 1

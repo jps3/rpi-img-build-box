@@ -1,18 +1,25 @@
 ---
 # common / vars
 
+local_timezone: "America/New_York"
+
+local_locale: "en_US.UTF-8"
+
 max_apt_cache_age_hours: 2
 
 common_packages:
+  - ack
   - apt-transport-https
   - debian-goodies
   - git
   - htop
   - jq
   - kpartx
+  - linux-headers-amd64
   - nvi
   - parted
   - pv
+  - pwgen
   - python
   - python-passlib
   - qemu
@@ -20,5 +27,4 @@ common_packages:
   - rsync
   - systemd-container
   - unzip
-
-
+  - vim

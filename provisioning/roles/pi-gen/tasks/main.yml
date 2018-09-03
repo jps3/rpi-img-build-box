@@ -6,7 +6,7 @@
   when: ansible_distribution == 'Debian'
 
 - name: Git clone pi-gen repo
-  git: 
+  git:
     repo: "{{ pi_gen_repo }}"
     version: "master"
     depth: 1
