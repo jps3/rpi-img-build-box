@@ -1,14 +1,12 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-VAGRANTFILE_API_VERSION = "2"
-
-Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.vm.box = "bento-debian-9.4-amd64"
+Vagrant.configure("2") do |config|
+  config.vm.box = "bento/debian-9.5"
 
   config.vm.provider :virtualbox do |v|
     v.name = "pi-img-dev-box"
-    v.linked_clone = true
+    #v.linked_clone = true
     v.cpus = "2"
     v.memory = "2048"
     v.customize ["modifyvm", :id, "--ioapic", "on"]
