@@ -12,13 +12,24 @@ set -E
 #
 # =====================================================================
 
-timestamp="$(date +"%Y%m%d.%H%M")"
+timestamp_start="$(date +"%s")"
+
 orig_img="${1:-3DPrinterOS.img}"
+
 temp_img=$(mktemp ${orig_img//.img}-XXXXXX.img)
 temp_img_resize_amt="+1G" # qemu-img units and syntax
 temp_img_password_file="${temp_img//.img}-root-password.txt"
+
 random_root_password=""
 random_root_password_hash=""
+
+additional_packages=( 
+    apt-transport-https
+    ca-certificates
+    jq
+    lsb-release
+    rsync
+  )
 
 
 # =====================================================================
@@ -80,7 +91,7 @@ BOLDHIWHITE='\e[1;97m'
 function info () {
   local _key="$1"
   local _value="$2"
-  echo -en '['${START}${WHITE}'INFO '${END}']: '
+  echo -en '['${START}${BOLDCYAN}'INFO '${END}']: '
   echo -en ${WHITE}
   printf "%-30s : " "${_key}"
   echo -en ${END}
@@ -101,7 +112,7 @@ function error () {
 
 function error_and_exit () {
   error "$*"
-  false
+  exit 1
 }
 
 function debug () {
@@ -278,6 +289,7 @@ print_header "Perform Image Configuration in Cross-Platform Chroot"
 log "Changing root password on image ..."
 sudo systemd-nspawn -q --bind /usr/bin/qemu-arm-static -D ./rootfs/ /bin/bash <<-EOF
   echo 'root:${random_root_password_hash}' | chpasswd -e
+  sleep 1
 EOF
 
 log "Updating system configurations ..."
@@ -296,21 +308,48 @@ log "Updating packages (this may take awhile) ..."
 sudo systemd-nspawn -q --bind /usr/bin/qemu-arm-static -D ./rootfs/ /bin/bash <<-EOF
   echo 'Acquire::http { Proxy "http://172.17.0.1:3142"; };' | tee /etc/apt/apt.conf.d/51cache
   export http_proxy="http://172.17.0.1:3142"
-  apt-get update       -qq
-  apt-mark             hold   raspberrypi-sys-mods
-  apt-get upgrade      -qq    >/dev/null
-  apt-mark             unhold raspberrypi-sys-mods
-  apt-get upgrade      -qq    >/dev/null
-  apt-get dist-upgrade -qq
-  apt-get autoremove   -qq
-  apt-get autoclean    -qq
+  apt-get update          -qq
+  apt-mark               hold  raspberrypi-sys-mods
+  apt-get upgrade         -qq
+  apt-mark             unhold  raspberrypi-sys-mods
+  apt-get upgrade         -qq
+  apt-get dist-upgrade    -qq
+  apt-get purge           -qq  ${purge_packages[@]}
+  apt-get autoremove      -qq
+  apt-get autoclean       -qq
   rm -f /etc/apt/apt.conf.d/51cache
 EOF
 
-set +eE
+log "Install additional packages ..."
+sudo systemd-nspawn -q --bind /usr/bin/qemu-arm-static -D ./rootfs/ /bin/bash <<-EOF
+  echo 'Acquire::http { Proxy "http://172.17.0.1:3142"; };' | tee /etc/apt/apt.conf.d/51cache
+  export http_proxy="http://172.17.0.1:3142"
+  apt-get update          -qq
+  apt-get install         -qq  ${additional_packages[@]}
+  rm -f /etc/apt/apt.conf.d/51cache
+EOF
+
+log "Disable undesired systemd units/services in image ..."
+sudo systemd-nspawn -q --bind /usr/bin/qemu-arm-static -D ./rootfs/ /bin/bash <<-EOF
+  rm -vf /etc/systemd/system/multi-user.target.wants/3dprinteros*
+  rm -vf /etc/systemd/system/multi-user.target.wants/avahi-daemon.service
+  rm -vf /etc/systemd/system/sockets.target.wants/avahi-daemon.socket
+  rm -vf /etc/systemd/system/dbus-org.bluez.service 
+  rm -vf /etc/systemd/system/dbus-org.freedesktop.Avahi.service
+EOF
+
+log "Rsync'ing in local systemd unit to set unique hostname on boot ..."
+sudo rsync -avz /vagrant/src/set-unique-hostname-before-network/ rootfs/
+
+log "Enabling set-unique-hostname-before-network.service ..."
+sudo systemd-nspawn -q --bind /usr/bin/qemu-arm-static -D ./rootfs/ /bin/bash <<-EOF
+  mkdir -p  /etc/systemd/system/network.target.wants     && \
+  cd        /etc/systemd/system/network.target.wants     && \
+  ln -svf ../set-unique-hostname-before-network.service
+EOF
+
 log "Dropping you into the image's shell for any custom work ..."
 sudo systemd-nspawn -q --bind /usr/bin/qemu-arm-static -D ./rootfs/ /bin/bash
-set -eE
 
 
 # =====================================================================
@@ -323,8 +362,8 @@ print_header "Saving to Builds Folder"
 
 mkdir -p builds
 
-cp -v $temp_img builds/${timestamp}-$orig_img
-cp -v $temp_img_password_file builds/${timestamp}-${orig_img//.img}-root-password.txt
+cp -v $temp_img builds/${timestamp_start}-$orig_img
+cp -v $temp_img_password_file builds/${timestamp_start}-${orig_img//.img}-root-password.txt
 
 
 # =====================================================================
@@ -332,5 +371,8 @@ cp -v $temp_img_password_file builds/${timestamp}-${orig_img//.img}-root-passwor
 # Cleanup and exit
 #
 # =====================================================================
+
+timestamp_end="$(date +%s)"
+info "Workflow duration:" "$(( $timestamp_end - $timestamp_start )) seconds"
 
 exit 0
