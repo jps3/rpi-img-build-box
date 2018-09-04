@@ -123,7 +123,9 @@ tools*.tar*
 # Custom *.deb packages
 *.deb
 
-# Ignore files with "3DPrinterOS" (case-insensitive) in it.
+# Ignore files with "3DPrinterOS" (case-insensitive) in it and
+# related build by-products.
 3[Dd][Pp]rinter[Oo][Ss]*
 *.img
-
+*-root-password.txt
+salt/
