@@ -1,0 +1,4 @@
+# defaults file for set-unique-hostname-before-network
+
+HOSTNAME_PREFIX="amlpi"
+NETWORK_IFACE="eth0"
