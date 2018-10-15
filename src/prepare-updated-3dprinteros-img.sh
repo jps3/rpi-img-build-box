@@ -154,7 +154,8 @@ function cleanup_and_exit () {
   (mountpoint -q rootfs)      && sudo umount rootfs
 
   log "Deleting device maps for $temp_img ..."
-  (sudo losetup -j $temp_img) && sudo kpartx -d $temp_img
+  (sudo losetup -j $temp_img | grep -q ^/dev/loop) && \
+    sudo kpartx -dv $temp_img
 
   log "Removing temporary image file $temp_img"
   rm -vf -- $temp_img 
