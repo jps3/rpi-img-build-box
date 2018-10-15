@@ -129,3 +129,6 @@ tools*.tar*
 *.img
 *-root-password.txt
 salt/
+aml-salt.tar
+cloud-*.json
+rc.local
