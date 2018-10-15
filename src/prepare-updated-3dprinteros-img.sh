@@ -17,7 +17,7 @@ timestamp_start="$(date +"%s")"
 orig_img="${1:-3DPrinterOS.img}"
 
 temp_img=$(mktemp ${orig_img//.img}-XXXXXX.img)
-temp_img_resize_amt="+1G" # qemu-img units and syntax
+temp_img_resize_amt="+250M" # qemu-img units and syntax
 temp_img_password_file="${temp_img//.img}-root-password.txt"
 
 random_root_password=""
@@ -191,16 +191,33 @@ trap "cleanup_and_exit" EXIT
 print_header "Making Safety Copy of Image"
 
 info "Original img file" "$orig_img"
+
+if [[ $temp_img =~ .*-updated.*.img ]]; then
+  warn "Filename contains '-update', assuming customized image ..."
+  temp_img="$(echo $temp_img | sed -e 's/-updated/-updated-custom/')"
+fi
+
 info "Temporary img file" "$temp_img"
 log  "Copying $orig_img to $temp_img ...\n"
 pv $orig_img > $temp_img
 
+
+# =====================================================================
+#
+# Enlarge (resize) image file if not an -update.img file
+#
+# =====================================================================
+
 print_header "Resize Image File"
 
-log "Resizing $temp_img by $temp_img_resize_amt ..."
-info "Original size" "$(stat -c '%s' $temp_img)"
-qemu-img resize -f raw $temp_img $temp_img_resize_amt >/dev/null
-info "New size" "$(stat -c '%s' $temp_img)"
+if [[ $temp_img =~ .*-updated.*.img ]]; then
+  warn "Skipping. Filename contains '-update' ..."
+else
+  log "Resizing $temp_img by $temp_img_resize_amt ..."
+  info "Original size" "$(stat -c '%s' $temp_img)"
+  qemu-img resize -f raw $temp_img $temp_img_resize_amt >/dev/null
+  info "New size" "$(stat -c '%s' $temp_img)"
+fi
 
 
 # =====================================================================
@@ -211,33 +228,47 @@ info "New size" "$(stat -c '%s' $temp_img)"
 
 print_header "Expand Linux Partition to Fill New Image Size"
 
-start="$(    get_img_partition_info | awk -F: '$1==2       && $5=="ext4" { print $2 }')"
-orig_end="$( get_img_partition_info | awk -F: '$1==2       && $5=="ext4" { print $3 }')"
-new_end="$(  get_img_partition_info | awk -F: '$1~/\.img$/ && $3=="file" { print $2 }')"
-new_end=$(( ${new_end//s} - 1 )) # parted is happier if we back off by one
+if [[ $temp_img =~ .*-updated.*.img ]]; then
 
-info "Starting sector is"           "${start//s}"
-info "Original ending sector is"    "${orig_end//s}"
-info "New ending sector of img is"  "${new_end}"
+  warn "Skipping. Filename contains '-update' ..."
 
-log "Resizing Linux partition ..."
-/sbin/parted -s $temp_img \
-  unit s \
-  rm 2 \
-  mkpart primary ext4 $start $new_end \
-  >/dev/null
+else
 
-log "Creating device maps from image file ..."
-sudo kpartx -a $temp_img
+  start="$(    get_img_partition_info | awk -F: '$1==2       && $5=="ext4" { print $2 }')"
+  orig_end="$( get_img_partition_info | awk -F: '$1==2       && $5=="ext4" { print $3 }')"
+  new_end="$(  get_img_partition_info | awk -F: '$1~/\.img$/ && $3=="file" { print $2 }')"
+  new_end=$(( ${new_end//s} - 1 )) # parted is happier if we back off by one
 
-log "... Sleeping for 1 second ..."
-sleep 1
+  info "Starting sector is"           "${start//s}"
+  info "Original ending sector is"    "${orig_end//s}"
+  info "New ending sector of img is"  "${new_end}"
 
-log "Checking filesystem of image's resized Linux partition ..."
-sudo e2fsck -f /dev/mapper/loop0p2
+  log "Resizing Linux partition ..."
+  /sbin/parted -s $temp_img \
+    unit s \
+    rm 2 \
+    mkpart primary ext4 $start $new_end \
+    >/dev/null
 
-log "Resizing filesystem of image's resized Linux partition to fill new, empty space ..."
-sudo resize2fs /dev/mapper/loop0p2
+  log "Creating partition mappings from image file ..."
+  sudo kpartx -av $temp_img
+
+  log "... Sleeping for 1 second ..."
+  sleep 1
+
+  log "Checking filesystem of image's resized Linux partition ..."
+  sudo e2fsck -f /dev/mapper/loop0p2
+
+  log "Resizing filesystem of image's resized Linux partition to fill new, empty space ..."
+  sudo resize2fs /dev/mapper/loop0p2
+
+  log "... Sleeping for 1 second ..."
+  sleep 1
+
+  log "Deleting partition mappings for image file ..."
+  sudo kpartx -dv $temp_img
+
+fi
 
 
 # =====================================================================
@@ -246,10 +277,16 @@ sudo resize2fs /dev/mapper/loop0p2
 #
 # =====================================================================
 
-print_header "MOUNT IMAGE"
+print_header "Mount Image"
 
-log "Making root mountpoint ..."
-mkdir -p rootfs/boot
+log "Creating partition mappings for image file ..."
+sudo kpartx -av $temp_img
+
+log "... Sleeping for 1 second ..."
+sleep 1
+
+log "Making rootfs mountpoint ..."
+mkdir -p rootfs
 
 log "Mounting to rootfs ..."
 sudo mount -v /dev/mapper/loop0p2 rootfs
@@ -264,7 +301,7 @@ sudo mount -v /dev/mapper/loop0p1 rootfs/boot
 #
 # =====================================================================
 
-print_header "Make New Image Root Password"
+print_header "Update Root Password on Image"
 
 random_root_password="$(pwgen -s -cnyB 25 1 | tr -d \'\"\!)"
 random_root_password_hash="$(python3 -c 'import sys; import crypt; print(crypt.crypt("'"${random_root_password}"'", crypt.mksalt(crypt.METHOD_SHA512)))')"
@@ -278,51 +315,82 @@ set +o noclobber
 
 info "Root password saved to"     "$temp_img_password_file"
 
-
-# =====================================================================
-#
-# Update and base configure mounted image
-#
-# =====================================================================
-
-print_header "Perform Image Configuration in Cross-Platform Chroot"
-
 log "Changing root password on image ..."
 sudo systemd-nspawn -q --bind /usr/bin/qemu-arm-static -D ./rootfs/ /bin/bash <<-EOF
   echo 'root:${random_root_password_hash}' | chpasswd -e
   sleep 1
 EOF
 
-log "Updating system configurations ..."
-sudo systemd-nspawn -q --bind /usr/bin/qemu-arm-static -D ./rootfs/ /bin/bash <<-EOF
-  export DEBIAN_FRONTEND=noninteractive
-  echo 'America/New_York' > /etc/timezone
-  dpkg-reconfigure -f noninteractive tzdata
-  sed -i -e 's/"pc105"/"pc104"/' -e 's/"gb"/"us"/' /etc/default/keyboard
-  dpkg-reconfigure -f noninteractive keyboard-configuration
-  sed -i -e 's/en_GB.UTF-8/en_US.UTF-8/' /etc/default/locale
-  sed -i -e 's/^ *\([a-z].*\)$/# \1/' -e 's/^# *\(en_US\.UTF-8 .*\)/\1/' /etc/locale.gen
-  dpkg-reconfigure -f noninteractive locales
+
+# =====================================================================
+#
+# Update Base Image
+#
+# =====================================================================
+
+print_header "Update Base Image"
+
+if [[ $temp_img =~ .*-updated.*.img ]]; then
+
+  warn "Skipping. Filename contains '-update' ..."
+
+else
+
+  log "Updating system configurations ..."
+  sudo systemd-nspawn -q --bind /usr/bin/qemu-arm-static -D ./rootfs/ /bin/bash <<-EOF
+    export DEBIAN_FRONTEND=noninteractive
+    echo 'America/New_York' > /etc/timezone
+    dpkg-reconfigure -f noninteractive tzdata
+    sed -i -e 's/"pc105"/"pc104"/' -e 's/"gb"/"us"/' /etc/default/keyboard
+    dpkg-reconfigure -f noninteractive keyboard-configuration
+    sed -i -e 's/en_GB.UTF-8/en_US.UTF-8/' /etc/default/locale
+    sed -i -e 's/^ *\([a-z].*\)$/# \1/' -e 's/^# *\(en_US\.UTF-8 .*\)/\1/' /etc/locale.gen
+    dpkg-reconfigure -f noninteractive locales
 EOF
 
-log "Updating packages (this may take awhile) ..."
-sudo systemd-nspawn -q --bind /usr/bin/qemu-arm-static -D ./rootfs/ /bin/bash <<-EOF
-  echo 'Acquire::http { Proxy "http://172.17.0.1:3142"; };' | tee /etc/apt/apt.conf.d/51cache
-  export http_proxy="http://172.17.0.1:3142"
-  apt-get update          -qq
-  apt-mark               hold  raspberrypi-sys-mods
-  apt-get upgrade         -qq
-  apt-mark             unhold  raspberrypi-sys-mods
-  apt-get upgrade         -qq
-  apt-get dist-upgrade    -qq
-  apt-get purge           -qq  ${purge_packages[@]}
-  apt-get autoremove      -qq
-  apt-get autoclean       -qq
-  rm -f /etc/apt/apt.conf.d/51cache
+  log "Updating packages (this may take awhile) ..."
+  sudo systemd-nspawn -q --bind /usr/bin/qemu-arm-static -D ./rootfs/ /bin/bash <<-EOF
+    echo 'Acquire::http { Proxy "http://172.17.0.1:3142"; };' | tee /etc/apt/apt.conf.d/51cache
+    export http_proxy="http://172.17.0.1:3142"
+    apt-get update          -qq
+    apt-mark               hold  raspberrypi-sys-mods
+    apt-get upgrade         -qq
+    apt-mark             unhold  raspberrypi-sys-mods
+    apt-get upgrade         -qq
+    apt-get dist-upgrade    -qq
+    apt-get purge           -qq  ${purge_packages[@]}
+    apt-get autoremove      -qq
+    apt-get autoclean       -qq
+    rm -f /etc/apt/apt.conf.d/51cache
 EOF
+
+  log "Creating a backup copy of the updated image ..."
+  sudo umount rootfs/boot
+  sudo umount rootfs
+  sudo kpartx -dv $temp_img
+  temp_img_backup=${temp_img//.img/-updated.img}
+  pv $temp_img > $temp_img_backup
+  sudo kpartx -av $temp_img
+
+  log "... Sleeping for 1 second ..."
+  sleep 1
+
+  sudo mount /dev/mapper/loop0p2 rootfs
+  sudo mount /dev/mapper/loop0p1 rootfs/boot
+
+fi
+
+
+# =====================================================================
+#
+# Customizing Updated Image
+#
+# =====================================================================
+
+print_header "Customize Updated Image"
 
 log "Install additional packages ..."
-sudo systemd-nspawn -q --bind /usr/bin/qemu-arm-static -D ./rootfs/ /bin/bash <<-EOF
+sudo systemd-nspawn -q --bind /usr/bin/qemu-arm-static -D ./rootfs/ /bin/bash -x <<-EOF
   echo 'Acquire::http { Proxy "http://172.17.0.1:3142"; };' | tee /etc/apt/apt.conf.d/51cache
   export http_proxy="http://172.17.0.1:3142"
   apt-get update          -qq
@@ -331,7 +399,7 @@ sudo systemd-nspawn -q --bind /usr/bin/qemu-arm-static -D ./rootfs/ /bin/bash <<
 EOF
 
 log "Disable undesired systemd units/services in image ..."
-sudo systemd-nspawn -q --bind /usr/bin/qemu-arm-static -D ./rootfs/ /bin/bash <<-EOF
+sudo systemd-nspawn -q --bind /usr/bin/qemu-arm-static -D ./rootfs/ /bin/bash -x <<-EOF
   rm -vf /etc/systemd/system/multi-user.target.wants/3dprinteros*
   rm -vf /etc/systemd/system/multi-user.target.wants/avahi-daemon.service
   rm -vf /etc/systemd/system/sockets.target.wants/avahi-daemon.socket
@@ -343,14 +411,58 @@ log "Rsync'ing in local systemd unit to set unique hostname on boot ..."
 sudo rsync -avz /vagrant/src/set-unique-hostname-before-network/ rootfs/
 
 log "Enabling set-unique-hostname-before-network.service ..."
-sudo systemd-nspawn -q --bind /usr/bin/qemu-arm-static -D ./rootfs/ /bin/bash <<-EOF
+sudo systemd-nspawn -q --bind /usr/bin/qemu-arm-static -D ./rootfs/ /bin/bash -x <<-EOF
   mkdir -p  /etc/systemd/system/network.target.wants     && \
   cd        /etc/systemd/system/network.target.wants     && \
   ln -svf ../set-unique-hostname-before-network.service
 EOF
 
+set +e
+set +E
 log "Dropping you into the image's shell for any custom work ..."
 sudo systemd-nspawn -q --bind /usr/bin/qemu-arm-static -D ./rootfs/ /bin/bash
+set -e
+set -E
+
+# =====================================================================
+#
+# Unmount filesystem(s) and delete partition mappings
+#
+# =====================================================================
+
+print_header "Perform chattrs for Hack-y File Protections"
+
+files_to_chattr=(
+  "etc/passwd"
+  "etc/shadow"
+  "etc/ssh/sshd_config"
+  "root/.ssh/authorized_keys"
+  )
+
+for f in "${files_to_chattr[@]}"; do
+  [[ -e rootfs/${f} ]] && sudo chattr -V +i rootfs/${f}*
+done
+
+
+# =====================================================================
+#
+# Unmount filesystem(s) and delete partition mappings
+#
+# =====================================================================
+
+print_header "Unmount Image"
+
+log "Unmounting rootfs/boot ..."
+sudo umount -v rootfs/boot
+
+log "Unmounting rootfs ..."
+sudo umount -v rootfs
+
+log "Deleting rootfs mountpoint ..."
+rmdir -pv rootfs
+
+log "Deleting partition mappings for image file ..."
+sudo kpartx -dv $temp_img
 
 
 # =====================================================================
@@ -361,10 +473,9 @@ sudo systemd-nspawn -q --bind /usr/bin/qemu-arm-static -D ./rootfs/ /bin/bash
 
 print_header "Saving to Builds Folder"
 
-mkdir -p builds
-
-cp -v $temp_img builds/${timestamp_start}-$orig_img
-cp -v $temp_img_password_file builds/${timestamp_start}-${orig_img//.img}-root-password.txt
+pv $temp_img               > builds/${timestamp_start}-$orig_img
+pv $temp_img_password_file > builds/${timestamp_start}-${orig_img//.img}-root-password.txt
+sudo chown vagrant:vagrant builds/*
 
 
 # =====================================================================
