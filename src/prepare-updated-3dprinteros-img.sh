@@ -41,10 +41,10 @@ additional_packages=(
 START='\e[1m'
 END='\e[0m'
 
-BLACK='\e[0;30m'
-BOLDBLACK='\e[1;30m'
-HIBLACK='\e[0;90m'
-BOLDHIBLACK='\e[1;90m'
+#BLACK='\e[0;30m'
+#BOLDBLACK='\e[1;30m'
+#HIBLACK='\e[0;90m'
+#BOLDHIBLACK='\e[1;90m'
 
 RED='\e[0;31m'
 BOLDRED='\e[1;31m'
@@ -66,10 +66,10 @@ BOLDCYAN='\e[1;34m'
 HIBLUE='\e[0;94m'
 BOLDHIBLUE='\e[1;94m'
 
-PURPLE='\e[0;35m'
-BOLDPURPLE='\e[1;35m'; 
-HIPURPLE='\e[0;95m'
-BOLDHIPURPLE='\e[1;95m'
+#PURPLE='\e[0;35m'
+#BOLDPURPLE='\e[1;35m'; 
+#HIPURPLE='\e[0;95m'
+#BOLDHIPURPLE='\e[1;95m'
 
 CYAN='\e[0;36m'
 BOLDCYAN='\e[1;36m'
@@ -99,24 +99,24 @@ function info () {
 }
 
 function log () {
-  echo -e '['${START}${BOLDGREEN}'LOG\e[0m  ]: \e[37m'"$*"'\e[0m'
+  echo -e '['${START}${BOLDGREEN}'LOG'${END}'  ]: '${WHITE}"$*"${END}
 }
 
 function warn () {
-  echo -e '['${START}${BOLDYELLOW}'WARN\e[0m ]: \e[37m'"$*"'\e[0m'
+  echo -e '['${START}${BOLDYELLOW}'WARN'${END}' ]: '${WHITE}"$*"${END}
 }
 
 function error () {
-  echo -e '['${START}${BOLDRED}'ERROR'${END}']: '${START}'\e[97m'"$*"'\e[0m'
+  echo -e '['${START}${BOLDRED}'ERROR'${END}']: '${START}${BOLDHIRED}"$*"${END}
+}
+
+function debug () {
+  echo -e '['${START}${BOLDHIWHITE}'DEBUG'${END}']: '${START}${WHITE}"$*"${END}
 }
 
 function error_and_exit () {
   error "$*"
   exit 1
-}
-
-function debug () {
-  echo -e '['${START}'\e[96mDEBUG\e[0m]: \e[37m'"$*"'\e[0m'
 }
 
 function print_header () {
