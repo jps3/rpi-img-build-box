@@ -1,4 +1,6 @@
 # defaults file for set-unique-hostname-before-network
 
-HOSTNAME_PREFIX="amlpi"
+## TODO: Manage this via Salt using Jinja templating
+
+HOSTNAME_PREFIX="testpi"
 NETWORK_IFACE="eth0"
