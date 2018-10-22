@@ -10,6 +10,7 @@ Vagrant.configure("2") do |config|
     v.cpus = "2"
     v.memory = "2048"
     v.customize ["modifyvm", :id, "--ioapic", "on"]
+    v.customize ["modifyvm", :id, "--audio", "none"]
   end
 
   config.vm.hostname = "pi-img-dev-box"
