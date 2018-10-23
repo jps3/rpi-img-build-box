@@ -132,3 +132,5 @@ salt/
 aml-salt.tar
 cloud-*.json
 rc.local
+*.xz
+ssh-pubkeys/*-ssh-key.pub
