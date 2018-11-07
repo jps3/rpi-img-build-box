@@ -415,6 +415,7 @@ EOF
 
 log "Running saltstack-prep-and-install.sh ..."
 sudo $systemd_nspawn_cmd \
+  -E SALT_MASTER="${salt_master_hostname}" \
   /vagrant/src/saltstack-prep-and-install.sh
 
 #log "Dropping you into the image's shell for any custom work ..."
@@ -470,7 +471,10 @@ sudo kpartx -dv $temp_img
 print_header "Saving to Builds Folder"
 
 pv $temp_img               > builds/${timestamp_start}-$orig_img
-pv $temp_img_password_file > builds/${timestamp_start}-${orig_img//.img}-root-password.txt
+
+pv $temp_img_password_file > \
+  builds/${timestamp_start}-${orig_img//.img}-root-password.txt
+
 sudo chown vagrant:vagrant builds/*
 
 
