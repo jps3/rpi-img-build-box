@@ -8,19 +8,11 @@ set -E
 
 # =====================================================================
 #
-# Global Variables
+# User-Defined Variables
 #
 # =====================================================================
 
-SYSTEMD_NSPAWN_CMD='systemd-nspawn -q --bind /usr/bin/qemu-arm-static --bind /vagrant -D ./rootfs/'
-
-timestamp_start="$(date +"%s")"
-
-orig_img="${1:-3DPrinterOS.img}"
-
-temp_img=$(mktemp ${orig_img//.img}-XXXXXX.img)
-#temp_img_resize_amt="+250M" # qemu-img units and syntax
-temp_img_password_file="${temp_img//.img}-root-password.txt"
+salt_master_hostname="${2:-}"
 
 random_root_password_length=20
 
@@ -32,6 +24,8 @@ additional_packages=(
     "rsync"
   )
 
+files_to_chattr=()
+
 #files_to_chattr=(
 #  "etc/passwd"
 #  "etc/passwd-"
@@ -41,7 +35,39 @@ additional_packages=(
 #  "root/.ssh/authorized_keys"
 #  )
 
-#purge_packages=()
+purge_packages=()
+
+
+# =====================================================================
+#
+# Global Variables
+#
+# =====================================================================
+
+timestamp_start="$(date +"%s")"
+
+orig_img="${1:-3DPrinterOS.img}"
+
+temp_img=$(mktemp ${orig_img//.img}-XXXXXX.img)
+#temp_img_resize_amt="+250M" # qemu-img units and syntax
+temp_img_password_file="${temp_img//.img}-root-password.txt"
+
+
+# =====================================================================
+#
+# Complex Command Substitutions
+#
+# =====================================================================
+
+systemd_nspawn_cmd='
+  systemd-nspawn 
+  -q 
+  --bind /usr/bin/qemu-arm-static 
+  --bind /vagrant 
+  -D 
+  ./rootfs/
+'
+
 
 # =====================================================================
 #
@@ -261,7 +287,7 @@ random_root_password_hash="$(sed -n '/^\$6\$/p' $temp_img_password_file)"
 
 if [[ -n "${random_root_password_hash}" ]]; then
   log "Changing root password on image ..."
-  sudo ${SYSTEMD_NSPAWN_CMD} /bin/bash <<-EOF
+  sudo $systemd_nspawn_cmd /bin/bash <<-EOF
     echo 'root:${random_root_password_hash}' | chpasswd -e
     sleep 1
 EOF
@@ -286,7 +312,7 @@ if [[ $temp_img =~ .*-updated.*.img ]]; then
 else
 
   log "Updating system configurations ..."
-  sudo ${SYSTEMD_NSPAWN_CMD} /bin/bash <<-EOF
+  sudo $systemd_nspawn_cmd /bin/bash <<-EOF
     export DEBIAN_FRONTEND=noninteractive
     echo 'America/New_York' > /etc/timezone
     dpkg-reconfigure -f noninteractive tzdata
@@ -298,7 +324,7 @@ else
 EOF
 
   log "Updating packages (this may take awhile) ..."
-  sudo ${SYSTEMD_NSPAWN_CMD} /bin/bash <<-EOF
+  sudo $systemd_nspawn_cmd /bin/bash <<-EOF
     echo 'Acquire::http { Proxy "http://172.17.0.1:3142"; };' | tee /etc/apt/apt.conf.d/51cache
     export http_proxy="http://172.17.0.1:3142"
     apt-get update          -qq
@@ -358,7 +384,7 @@ fi
 print_header "Customize Updated Image"
 
 log "Install additional packages ..."
-sudo ${SYSTEMD_NSPAWN_CMD} /bin/bash -x <<-EOF
+sudo $systemd_nspawn_cmd /bin/bash -x <<-EOF
   echo 'Acquire::http { Proxy "http://172.17.0.1:3142"; };' | \
     tee /etc/apt/apt.conf.d/51cache
   export http_proxy="http://172.17.0.1:3142"
@@ -368,7 +394,7 @@ sudo ${SYSTEMD_NSPAWN_CMD} /bin/bash -x <<-EOF
 EOF
 
 log "Disable undesired systemd units/services in image ..."
-sudo ${SYSTEMD_NSPAWN_CMD} /bin/bash -x <<-EOF
+sudo $systemd_nspawn_cmd /bin/bash -x <<-EOF
   rm -vf /etc/systemd/system/multi-user.target.wants/3dprinteros*
   rm -vf /etc/systemd/system/multi-user.target.wants/avahi-daemon.service
   rm -vf /etc/systemd/system/sockets.target.wants/avahi-daemon.socket
@@ -381,18 +407,19 @@ sudo rsync -rlptv /vagrant/src/set-unique-hostname-before-network/ rootfs/
 #sudo find rootfs/ -user 1000 -exec chown root:root {} + 2>/dev/null
 
 log "Enabling set-unique-hostname-before-network.service ..."
-sudo ${SYSTEMD_NSPAWN_CMD} /bin/bash -x <<-EOF
+sudo $systemd_nspawn_cmd /bin/bash -x <<-EOF
   mkdir -p  /etc/systemd/system/network.target.wants     && \
   cd        /etc/systemd/system/network.target.wants     && \
   ln -svf ../set-unique-hostname-before-network.service
 EOF
 
 log "Running saltstack-prep-and-install.sh ..."
-sudo ${SYSTEMD_NSPAWN_CMD} /vagrant/src/saltstack-prep-and-install.sh
+sudo $systemd_nspawn_cmd \
+  /vagrant/src/saltstack-prep-and-install.sh
 
 #log "Dropping you into the image's shell for any custom work ..."
 #warn "You can avoid errors on exit by using 'exit 0' not ^D"
-#sudo ${SYSTEMD_NSPAWN_CMD} /bin/bash
+#sudo $systemd_nspawn_cmd /bin/bash
 
 
 # =====================================================================
