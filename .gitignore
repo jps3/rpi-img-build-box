@@ -123,14 +123,25 @@ tools*.tar*
 # Custom *.deb packages
 *.deb
 
-# Ignore files with "3DPrinterOS" (case-insensitive) in it and
-# related build by-products.
+#
+# Project-specific files
+# 
+
+# 3DPrinterOS typically .img files
 3[Dd][Pp]rinter[Oo][Ss]*
-*.img
-*-root-password.txt
-salt/
-aml-salt.tar
-cloud-*.json
-rc.local
-*.xz
+
+# Vagrant-generated ssh-config
+ssh-config
+
+# Ignore ssh *.pub key files used in project scripts
 ssh-pubkeys/*-ssh-key.pub
+
+# Ignore files typically products or results from project scripts
+*.img
+*.json
+*.tar
+*.tar.*
+*.txt
+*.gz
+*.bz2
+*.xz
