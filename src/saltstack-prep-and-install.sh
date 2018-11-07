@@ -254,6 +254,13 @@ fi
 log "(Force) remove minion_id file ..."
 rm -fv /etc/salt/minion_id
 
+if [[ -n "${SALT_MASTER}" ]]; then
+  info "Setting salt-minion 'master' to" "${SALT_MASTER}"
+  cat <<-EOF >/etc/salt/minion.d/00-master.conf
+master: ${SALT_MASTER}
+EOF
+fi
+
 
 # =====================================================================
 #
