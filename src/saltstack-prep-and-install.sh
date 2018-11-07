@@ -183,35 +183,38 @@ set +x
 log "Done with additional systemd changes."
 
 
-# =====================================================================
 #
-# Additional packages
+# This 3DPoS crap does not belong in this script
 #
-# =====================================================================
-
-print_header "Installing packages supporting 3DPrinterOS Client"
-
-addl_pkgs=(
-  virt-what
-  opencv-data
-  python-opencv
-  python-numpy
-  python-libusb1
-  libusb-1.0-0
-  python-notify2
-  fail2ban
-)
-
-log "Updating apt caches ..."
-apt-get update -qq
-
-log "Installing ${#addl_pkgs[@]} additional packages ..."
-for pkg in "${addl_pkgs[@]}"; do
-  info "Installing $pkg ..."
-  apt-get install --no-install-recommends -qq $pkg
-done
-
-log "Installation of additional packages completed."
+# # =====================================================================
+# #
+# # Additional packages
+# #
+# # =====================================================================
+# 
+# print_header "Installing packages supporting 3DPrinterOS Client"
+# 
+# addl_pkgs=(
+#   virt-what
+#   opencv-data
+#   python-opencv
+#   python-numpy
+#   python-libusb1
+#   libusb-1.0-0
+#   python-notify2
+#   fail2ban
+# )
+# 
+# log "Updating apt caches ..."
+# apt-get update -qq
+# 
+# log "Installing ${#addl_pkgs[@]} additional packages ..."
+# for pkg in "${addl_pkgs[@]}"; do
+#   info "Installing $pkg ..."
+#   apt-get install --no-install-recommends -qq $pkg
+# done
+# 
+# log "Installation of additional packages completed."
 
 
 # =====================================================================
