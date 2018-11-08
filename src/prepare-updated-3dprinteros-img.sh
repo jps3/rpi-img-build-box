@@ -17,9 +17,9 @@ salt_master_hostname="${2:-}"
 random_root_password_length=20
 
 additional_packages=( 
+    "jq"
     "apt-transport-https"
     "ca-certificates"
-    "jq"
     "lsb-release"
     "rsync"
   )
@@ -275,7 +275,7 @@ import string
 password_len = ${random_root_password_length:-20}
 all_chars = string.ascii_letters + string.punctuation + string.digits
 password = "".join(random.choice(all_chars) for x in range(0, password_len))
-encoded = base64.b64encode(password.encode())
+encoded = base64.b64encode(password.encode()).decode()
 hash = crypt.crypt(password, crypt.mksalt(crypt.METHOD_SHA512))
 print("{p}\n{e}\n{h}\n".format(p=password, e=encoded, h=hash))
 EOF

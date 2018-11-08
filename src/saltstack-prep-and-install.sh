@@ -86,7 +86,7 @@ if (id pi >/dev/null 2>/dev/null); then
   read -a pi_groups <<< $(id -Gn pi)
 
   log "Removing user 'pi' as member from from ${#pi_groups[@]} groups ..."
-  for gid in $"{pi_groups[@]}"; do 
+  for gid in "${pi_groups[@]}"; do 
     info "Removing from group: ${gid} ..."
     deluser pi $gid >/dev/null || warn "Error removing from ${gid}"
   done
