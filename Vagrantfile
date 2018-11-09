@@ -7,8 +7,8 @@ Vagrant.configure("2") do |config|
   config.vm.provider :virtualbox do |v|
     v.name = "pi-img-dev-box"
     #v.linked_clone = true
-    v.cpus = "2"
-    v.memory = "2048"
+    v.cpus = "4"
+    v.memory = "4096"
     v.customize ["modifyvm", :id, "--ioapic", "on"]
     v.customize ["modifyvm", :id, "--audio", "none"]
   end
