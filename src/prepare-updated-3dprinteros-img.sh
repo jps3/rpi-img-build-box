@@ -319,13 +319,15 @@ else
     sed -i -e 's/"pc105"/"pc104"/' -e 's/"gb"/"us"/' /etc/default/keyboard
     dpkg-reconfigure -f noninteractive keyboard-configuration
     sed -i -e 's/en_GB.UTF-8/en_US.UTF-8/' /etc/default/locale
-    sed -i -e 's/^ *\([a-z].*\)$/# \1/' -e 's/^# *\(en_US\.UTF-8 .*\)/\1/' /etc/locale.gen
+    sed -i -e 's/^ *\([a-z].*\)$/# \1/' \
+      -e 's/^# *\(en_US\.UTF-8 .*\)/\1/' /etc/locale.gen
     dpkg-reconfigure -f noninteractive locales
 EOF
 
   log "Updating packages (this may take awhile) ..."
   sudo $systemd_nspawn_cmd /bin/bash <<-EOF
-    echo 'Acquire::http { Proxy "http://172.17.0.1:3142"; };' | tee /etc/apt/apt.conf.d/51cache
+    echo 'Acquire::http { Proxy "http://172.17.0.1:3142"; };' | \
+      tee /etc/apt/apt.conf.d/51cache
     export http_proxy="http://172.17.0.1:3142"
     apt-get update          -qq
     # apt-mark               hold  raspberrypi-sys-mods
@@ -418,9 +420,9 @@ sudo $systemd_nspawn_cmd \
   -E SALT_MASTER="${salt_master_hostname}" \
   /vagrant/src/saltstack-prep-and-install.sh
 
-#log "Dropping you into the image's shell for any custom work ..."
-#warn "You can avoid errors on exit by using 'exit 0' not ^D"
-#sudo $systemd_nspawn_cmd /bin/bash
+log "Dropping you into the image's shell for any custom work ..."
+warn "You can avoid errors on exit by using 'exit 0' not ^D"
+sudo $systemd_nspawn_cmd /bin/bash
 
 
 # =====================================================================
