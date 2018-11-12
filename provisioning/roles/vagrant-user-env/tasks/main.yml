@@ -1,6 +1,10 @@
 ---
 # vagrant-user-env / tasks / main
 
+- name: Check if bash_it dir exists
+  stat: path=/home/vagrant/.bash_it
+  register: bash_it
+
 - name: Git clone bash-it repo
   git:
     repo: "{{ bash_it_repo }}"
@@ -17,6 +21,7 @@
   become_user: vagrant
   become: yes
   register: bash_it_installed
+  when: bash_it.stat.exists == False
 
 - name: Create build directory
   file:
@@ -30,3 +35,13 @@
     name: vagrant
     groups: docker
   when: result_install_docker_packages is success
+
+- name: Ensure direnv started in user .bashrc
+  lineinfile: 
+    path: /home/vagrant/.bashrc
+    regexp: '^.*direnv hook bash.*$'
+    line: 'eval "$(direnv hook bash)"'
+    state: present
+    owner: vagrant
+    group: vagrant
+    mode: 0644
