@@ -439,6 +439,8 @@ print_header "Perform chattrs for Hack-y File Protections"
     for file in "${files_to_chattr[@]}"; do
       sudo chattr -V +i "${file}"
     done
+  else
+    warn "Nothing to do."
   fi
 )
 
@@ -471,6 +473,8 @@ sudo kpartx -dv $temp_img
 # =====================================================================
 
 print_header "Saving to Builds Folder"
+
+mkdir -p builds
 
 pv $temp_img               > builds/${timestamp_start}-$orig_img
 
