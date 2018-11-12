@@ -5,10 +5,13 @@
   become_method: sudo
   become_user: root
 
+  vars:
+    raspberrypi_linux_version: "rpi-4.14.y"
+
   roles:
     - common
     - docker-ce
     - pi-gen
-    #- linux-kernel-cross-compiler
     - vagrant-user-env
     - img-workspace
+    - linux-kernel-crossbuild

@@ -1,0 +1,16 @@
+---
+crossbuilding_packages:
+  - bc 
+  - build-essential
+  - crossbuild-essential-arm64
+  - crossbuild-essential-armhf
+  - direnv
+  - git-core
+  - jq 
+  - libgmp-dev 
+  - libisl-dev 
+  - libmpfr-dev 
+  - libncurses5-dev 
+  - python-pygments
+  - time
+  - virt-what

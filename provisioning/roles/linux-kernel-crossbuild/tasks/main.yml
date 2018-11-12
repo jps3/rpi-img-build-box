@@ -1,0 +1,35 @@
+---
+- name: Install packages to support cross-platform building
+  apt:
+    pkg: "{{ crossbuilding_packages }}"
+
+- name: Shallow git clone or raspberrypi linux repo
+  git:
+    repo: https://github.com/raspberrypi/linux.git
+    version: "{{ raspberrypi_linux_version }}"
+    depth: 1
+    dest: ~/build/linux
+  become_user: vagrant
+  become: yes
+
+- name: Create linux/.direnv.armhf
+  copy:
+    content: |
+      export ARCH=arm
+      export CROSS_COMPILE=arm-linux-gnueabihf-
+      export J="$( echo $(nproc) '*' 1.5 / 1 | bc)"
+    dest: /home/vagrant/build/linux/.envrc.armhf
+    owner: vagrant
+    group: vagrant
+    mode: 0644
+
+- name: Create linux/.direnv.arm64
+  copy:
+    content: |
+      export ARCH=arm64
+      export CROSS_COMPILE=aarch64-linux-gnu-
+      export J="$( echo $(nproc) '*' 1.5 / 1 | bc)"
+    dest: /home/vagrant/build/linux/.envrc.arm64
+    owner: vagrant
+    group: vagrant
+    mode: 0644
