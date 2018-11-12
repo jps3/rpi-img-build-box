@@ -13,7 +13,7 @@
 # TODO: This should only run if not run before.
 #       (do not yet know how to implement this check)
 - name: Run bash-it installer
-  shell: "~/.bash_it/install.sh --silent"
+  command: "~/.bash_it/install.sh --silent"
   become_user: vagrant
   become: yes
   register: bash_it_installed

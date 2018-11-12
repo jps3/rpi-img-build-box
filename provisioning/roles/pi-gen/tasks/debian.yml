@@ -3,5 +3,5 @@
 
 - name: Install common packages
   apt:
-    name: "{{ item }}"
-  with_items: "{{ pi_gen_support_packages }}"
+    pkg: "{{ pi_gen_support_packages }}"
+    state: present

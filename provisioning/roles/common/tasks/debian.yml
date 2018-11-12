@@ -8,7 +8,7 @@
     cache_valid_time: "{{ (max_apt_cache_age_hours * 60 * 60) | int | abs }}"
 
 - name: Install common packages
-  apt:
-    name: "{{ item }}"
-  with_items: "{{ common_packages }}"
+  apt: 
+    pkg: "{{ common_packages }}"
+    state: present
 

@@ -9,8 +9,8 @@
 
 - name: Install packages required to support docker-ce
   apt:
-    name: "{{ item }}"
-  with_items: "{{ support_packages }}"
+    pkg: "{{ support_packages }}"
+    state: present
   register: result_docker_ce_support_packages
 
 - name: Add apt key for docker repo
@@ -33,7 +33,7 @@
 
 - name: Install docker-ce package(s)
   apt:
-    name: "{{ item }}"
-  with_items: "{{ docker_packages }}"
+    pkg: "{{ docker_packages }}"
+    state: present
   register: result_install_docker_packages
   when: result_add_apt_repo is success
