@@ -7,8 +7,6 @@
     state: directory
   with_items:
     - "~/build/img-workspace"
-    - "~/build/img-workspace/rootfs"
-    - "~/build/img-workspace/rootfs/boot"
   become_user: vagrant
   become: yes
 
