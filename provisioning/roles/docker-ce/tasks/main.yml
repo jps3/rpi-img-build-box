@@ -14,8 +14,7 @@
 
 - name: Install python docker tools
   pip:
-    name: "{{ item }}"
-  with_items: "{{ python_tools }}"
+    name: "{{ python_tools }}"
 
 - name: Ensure docker service is enabled and running
   service:
