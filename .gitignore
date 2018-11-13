@@ -145,3 +145,5 @@ ssh-pubkeys/*-ssh-key.pub
 *.gz
 *.bz2
 *.xz
+
+NOTES.*
