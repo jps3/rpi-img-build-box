@@ -36,8 +36,8 @@
 
 - name: Create symlink to .envrc for desired platform
   file:
-    src: /home/vagrant/build/linux/.envrc.{{ kernel_arch }}
-    dest: .envrc
+    src: .envrc.{{ kernel_arch }}
+    path: /home/vagrant/build/linux/.envrc
     owner: vagrant
     group: vagrant
     state: link
