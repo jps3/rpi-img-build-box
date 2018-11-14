@@ -11,6 +11,7 @@
     dest: ~/build/linux
   become_user: vagrant
   become: yes
+  ignore_errors: yes
 
 - name: Create linux/.direnv.armhf
   copy:
