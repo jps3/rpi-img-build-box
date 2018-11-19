@@ -310,7 +310,7 @@ if [[ -n "${random_root_password_hash}" ]]; then
 EOF
   log "Password changed for root on image."
 else
-  error "\$random_root_password_hash variable is empty."
+  error_and_exit "\$random_root_password_hash variable is empty."
 fi
 
 
