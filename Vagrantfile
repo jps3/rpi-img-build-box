@@ -13,7 +13,7 @@ Vagrant.configure("2") do |config|
     v.customize ["modifyvm", :id, "--audio", "none"]
   end
 
-  config.vm.hostname = "pi-img-dev-box"
+  #config.vm.hostname = "pi-img-dev-box"
 
   # Set the name of the VM. See: http://stackoverflow.com/a/17864388/100134
   config.vm.define :pi_img_dev_box do |pigen|
