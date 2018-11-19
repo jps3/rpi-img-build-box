@@ -147,3 +147,4 @@ ssh-pubkeys/*-ssh-key.pub
 *.xz
 
 NOTES.*
+tmp/
