@@ -11,8 +11,6 @@ set -e
 #
 # =====================================================================
 
-SALTSTACK_VERSION="${SALTSTACK_VERSION:-2018.3.1}"
-
 LANG=en_US.UTF-8
 LC_CTYPE=en_US.UTF-8
 
@@ -71,6 +69,18 @@ trap "cleanup_and_exit" EXIT
 # =====================================================================
 
 print_header "Start of $(basename $0)"
+
+printenv | sort -t= -k1 | grep ^SALT
+
+if [[ -z "$SALT_MASTER" ]]; then
+  error_and_exit "\$SALT_MASTER not defined or no value assigned."
+else
+  SALT_MASTER="-A ${SALT_MASTER}"
+fi
+
+if [[ -z "$SALTSTACK_VERSION" ]]; then
+  error_and_exit "\$SALTSTACK_VERSION not defined or no value assigned."
+fi
 
 
 # =====================================================================
@@ -235,19 +245,22 @@ debug "LSB_CODENAME: ${LSB_CODENAME}"
 DPKG_ARCH="$(dpkg --print-architecture)"
 debug "DPKG_ARCH: ${DPKG_ARCH}"
 
-log "Adding saltstack apt signing key ..."
-wget -O - https://repo.saltstack.com/apt/debian/${LSB_RELEASE}/${DPKG_ARCH}/archive/${SALTSTACK_VERSION}/SALTSTACK-GPG-KEY.pub | sudo apt-key add -
+#log "Adding saltstack apt signing key ..."
+#wget -O - https://repo.saltstack.com/apt/debian/${LSB_RELEASE}/${DPKG_ARCH}/archive/${SALTSTACK_VERSION}/SALTSTACK-GPG-KEY.pub | sudo apt-key add -
 
-log "Adding saltstack apt repo ..."
-cat <<EOF >/etc/apt/sources.list.d/saltstack.list
-deb http://repo.saltstack.com/apt/debian/${LSB_RELEASE}/${DPKG_ARCH}/archive/${SALTSTACK_VERSION} ${LSB_CODENAME} main
-EOF
+#log "Adding saltstack apt repo ..."
+#cat <<EOF >/etc/apt/sources.list.d/saltstack.list
+#deb http://repo.saltstack.com/apt/debian/${LSB_RELEASE}/${DPKG_ARCH}/archive/${SALTSTACK_VERSION} ${LSB_CODENAME} main
+#EOF
 
-log "Updating apt cache ..."
-apt-get update
+#log "Updating apt cache ..."
+#apt-get update
 
-log "Install salt-minion v${SALTSTACK_VERSION} ..."
-apt-get install --no-install-recommends -y salt-minion=${SALTSTACK_VERSION}+ds-1
+#log "Install salt-minion v${SALTSTACK_VERSION} ..."
+#apt-get install --no-install-recommends -y salt-minion=${SALTSTACK_VERSION}+ds-1
+
+curl -sLf https://bootstrap.saltstack.com | \
+  /bin/sh -s -- -X -F ${SALT_MASTER} ${SALTSTACK_VERSION}
 
 if (pgrep -c -f salt-minion >/dev/null); then
   log "Killing running salt-minion ..."
@@ -257,12 +270,20 @@ fi
 log "(Force) remove minion_id file ..."
 rm -fv /etc/salt/minion_id
 
-if [[ -n "${SALT_MASTER}" ]]; then
-  info "Setting salt-minion 'master' to" "${SALT_MASTER}"
-  cat <<-EOF >/etc/salt/minion.d/00-master.conf
-master: ${SALT_MASTER}
-EOF
-fi
+set +e
+log "Removing any generated keys in /etc/salt/pki ..."
+find /etc/salt/pki -type f -delete
+set -
+
+#if [[ -n "${SALT_MASTER}" ]]; then
+#  info "Setting salt-minion 'master' to" "${SALT_MASTER}"
+#  cat <<-EOF >/etc/salt/minion.d/00-master.conf
+#master: ${SALT_MASTER}
+#EOF
+#fi
+
+log "Creating empty grains file (for now)"
+touch /etc/salt/grains
 
 
 # =====================================================================

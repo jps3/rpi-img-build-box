@@ -12,8 +12,6 @@ set -E
 #
 # =====================================================================
 
-salt_master_hostname="${2:-}"
-
 random_root_password_length=20
 
 additional_packages=( 
@@ -127,6 +125,25 @@ function get_img_partition_info () {
 trap "err_handler"  ERR
 
 trap "cleanup_and_exit" EXIT
+
+
+# =====================================================================
+#
+# Sanity Checks
+#
+# =====================================================================
+
+print_header "Sanity Checks"
+
+if [[ -z "$SALTSTACK_VERSION" || -z "$SALT_MASTER_HOSTNAME" ]]; then
+  error_and_exit "Did you forget to 'sudo -E' or define any of these env vars?
+         - SALTSTACK_VERSION
+         - SALT_MASTER_HOSTNAME
+"
+else
+  info "SALTSTACK_VERSION" "$SALTSTACK_VERSION"
+  info "SALT_MASTER_HOSTNAME" "$SALT_MASTER_HOSTNAME"
+fi
 
 
 # =====================================================================
@@ -417,7 +434,8 @@ EOF
 
 log "Running saltstack-prep-and-install.sh ..."
 sudo $systemd_nspawn_cmd \
-  -E SALT_MASTER="${salt_master_hostname}" \
+  --setenv=SALT_MASTER="${SALT_MASTER_HOSTNAME}"      \
+  --setenv=SALTSTACK_VERSION="${SALTSTACK_VERSION}" \
   /vagrant/src/saltstack-prep-and-install.sh
 
 log "Dropping you into the image's shell for any custom work ..."
