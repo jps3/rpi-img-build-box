@@ -21,6 +21,11 @@ echo $NEW_HOSTNAME > /proc/sys/kernel/hostname
 echo $NEW_HOSTNAME > /etc/hostname
 /bin/hostname -F /etc/hostname
 
+#
+# Update /etc/hosts 127.0.1.1
+#
+sed -i -e '/^127\.0\.1\.1/ s/raspberrypi/'${NEW_HOSTNAME}'/' /etc/hosts
+
 set +E
 set +e
 
