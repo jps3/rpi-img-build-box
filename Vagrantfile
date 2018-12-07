@@ -5,6 +5,7 @@ Vagrant.configure("2") do |config|
   config.vm.box = "bento/debian-9.5"
 
   config.vm.provider :virtualbox do |v|
+    v.default_nic_type = "virtio"
     v.name = "pi-img-dev-box"
     #v.linked_clone = true
     v.cpus = "4"
