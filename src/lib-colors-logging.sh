@@ -90,7 +90,8 @@ function print_header () {
   # ├─┤ HEADER TEXT ├──────────────────────────────────────┤
   # 
   local _header="$(echo "$*" | tr 'a-z' 'A-Z')"
-  local _width=$(( $(tput cols) - "${#1}" - 7 ))
+  local _msg_len="${#1}"
+  local _width=$(( $(tput cols) - $_msg_len - 7 ))
   echo -e '\n'
   echo -en ${START}${WHITE}
   echo -n $'\u251c\u2500\u2524 '         # ├─┤
