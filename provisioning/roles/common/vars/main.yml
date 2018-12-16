@@ -14,6 +14,7 @@ common_packages:
   - git
   - htop
   - jq
+  - keyboard-configuration
   - kpartx
   - linux-headers-amd64
   - nvi

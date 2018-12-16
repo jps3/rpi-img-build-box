@@ -1,6 +1,10 @@
 ---
 # common / tasks / main
 
+- name: Install helpful {{ ansible_distribution }} packages.
+  include_tasks: debian.yml
+  when: ansible_distribution == 'Debian'
+
 - name: Ensure timezone set to {{ local_timezone }}
   timezone:
     name: "{{ local_timezone }}"
@@ -24,6 +28,3 @@
     replace: '\1="us"'
   notify: regenerate keyboard-configuration
 
-- name: Install helpful {{ ansible_distribution }} packages.
-  include_tasks: debian.yml
-  when: ansible_distribution == 'Debian'
