@@ -38,7 +38,7 @@
   when: result_install_docker_packages is success
 
 - name: Ensure direnv started in user .bashrc
-  lineinfile: 
+  lineinfile:
     path: /home/vagrant/.bashrc
     regexp: '^.*direnv hook bash.*$'
     line: 'eval "$(direnv hook bash)"'
