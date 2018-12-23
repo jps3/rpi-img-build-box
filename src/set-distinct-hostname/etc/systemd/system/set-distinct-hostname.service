@@ -6,12 +6,13 @@ DefaultDependencies=false
 Before=network-pre.target
 Wants=network-pre.target
 After=local-fs.target
-After=sys-subsystem-net-devices-eth0.device
+After=network-pre.target
+#After=sys-subsystem-net-devices-eth0.device
 
 [Service]
 Type=oneshot
 EnvironmentFile=-/etc/default/set-unique-hostname-before-network-service
-ExecStart=/bin/bash -c "/usr/local/sbin/set-unique-hostname-before-network.sh $()"
+ExecStart=/bin/bash /usr/local/sbin/set-unique-hostname-before-network.sh
 RemainAfterExit=yes
 
 [Install]
