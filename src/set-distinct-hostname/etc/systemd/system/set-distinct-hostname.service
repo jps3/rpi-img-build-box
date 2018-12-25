@@ -6,8 +6,7 @@ DefaultDependencies=false
 Before=network-pre.target
 Wants=network-pre.target
 After=local-fs.target
-After=network-pre.target
-#After=sys-subsystem-net-devices-eth0.device
+After=sys-subsystem-net-devices-eth0.device
 
 [Service]
 Type=oneshot
