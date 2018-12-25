@@ -1,5 +1,5 @@
 Package: set-distinct-hostname
-Version: 0.5
+Version: 0.5.1
 Maintainer: LU Wilbur IT Manager
 Architecture: all
 Description: Attempts to set distinct hostname based on a prefix and the last half of the default route's interface's MAC address normalized to uppercase and with ':' characters removed.
