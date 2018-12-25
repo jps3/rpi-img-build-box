@@ -1,4 +1,4 @@
-# /etc/systemd/system/set-unique-hostname-before-network.service
+# /etc/systemd/system/set-distinct-hostname.service
 
 [Unit]
 DefaultDependencies=false
@@ -11,8 +11,8 @@ After=network-pre.target
 
 [Service]
 Type=oneshot
-EnvironmentFile=-/etc/default/set-unique-hostname-before-network-service
-ExecStart=/bin/bash /usr/local/sbin/set-unique-hostname-before-network.sh
+EnvironmentFile=-/etc/default/set-distinct-hostname-service
+ExecStart=/bin/bash /usr/local/sbin/set-distinct-hostname.sh
 RemainAfterExit=yes
 
 [Install]
