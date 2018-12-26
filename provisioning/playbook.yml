@@ -6,7 +6,6 @@
   become_user: root
 
   vars:
-    raspberrypi_linux_version: "rpi-4.14.y"
     kernel_arch: "armhf"
 
   roles:

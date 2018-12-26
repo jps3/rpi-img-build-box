@@ -3,12 +3,13 @@
   apt:
     pkg: "{{ crossbuilding_packages }}"
 
-- name: Shallow git clone or raspberrypi linux repo
+- name: Shallow git clone of raspberrypi support repos
   git:
-    repo: https://github.com/raspberrypi/linux.git
-    version: "{{ raspberrypi_linux_version }}"
+    repo: "{{ git_repo_stub }}/{{ item }}.git"
     depth: 1
-    dest: ~/build/linux
+    version: "HEAD"
+    dest: "~/build/{{ item }}"
+  with_items: "{{ git_repos }}"
   become_user: vagrant
   become: yes
   ignore_errors: yes

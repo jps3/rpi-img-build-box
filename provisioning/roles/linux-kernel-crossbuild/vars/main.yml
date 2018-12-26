@@ -1,16 +1,34 @@
 ---
 crossbuilding_packages:
   - bc 
+  - binfmt-support
   - build-essential
   - crossbuild-essential-arm64
   - crossbuild-essential-armhf
+  - debhelper
+  - debootstrap
+  - devscripts
   - direnv
+  - dosfstools
+  - fakeroot
   - git-core
   - jq 
+  - kpartx
   - libgmp-dev 
   - libisl-dev 
   - libmpfr-dev 
   - libncurses5-dev 
+  - lvm2
   - python-pygments
+  - qemu
+  - qemu-user-static
+  - quilt
   - time
+  - tree
   - virt-what
+
+git_repo_stub: "https://github.com/raspberrypi"
+git_repos:
+  - linux
+  - firmware
+  - tools
