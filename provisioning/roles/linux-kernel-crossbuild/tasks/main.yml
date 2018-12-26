@@ -18,8 +18,12 @@
   copy:
     content: |
       export ARCH=arm
+      export KBUILD_DEBARCH=armhf
       export CROSS_COMPILE=arm-linux-gnueabihf-
+      #export ARM_TOOLS=/home/vagrant/build/tools
+      #export CROSS_COMPILE=$ARM_TOOLS/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64
       export J="$( echo $(nproc) '*' 1.5 / 1 | bc)"
+      echo "You can edit the 'EXTAVERSION = ' line in Makefile to have additional useful information appended to product names."
     dest: /home/vagrant/build/linux/.envrc.armhf
     owner: vagrant
     group: vagrant
@@ -30,7 +34,10 @@
     content: |
       export ARCH=arm64
       export CROSS_COMPILE=aarch64-linux-gnu-
+      #export ARM_TOOLS=/home/vagrant/build/tools
+      #export CROSS_COMPILE=$ARM_TOOLS/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64
       export J="$( echo $(nproc) '*' 1.5 / 1 | bc)"
+      echo "You can edit the 'EXTAVERSION = ' line in Makefile to have additional useful information appended to product names."
     dest: /home/vagrant/build/linux/.envrc.arm64
     owner: vagrant
     group: vagrant
