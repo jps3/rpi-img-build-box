@@ -10,6 +10,7 @@ max_apt_cache_age_hours: 2
 common_packages:
   - ack
   - apt-transport-https
+  - binutils
   - debian-goodies
   - e2fsprogs
   - git
