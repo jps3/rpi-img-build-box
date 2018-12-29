@@ -16,8 +16,9 @@ repo_arch: "{{ 'amd64' if ansible_architecture == 'x86_64' }}"
 
 repo_url: "https://download.docker.com/linux/debian"
 
-docker_packages:
-  - docker-ce
+docker_version_stub: "{{ '=' ~ docker_version if docker_version is not '' }}"
+
+docker_pkgname: "{{ 'docker-ce' ~ docker_version_stub }}"
 
 python_tools:
   - docker-compose

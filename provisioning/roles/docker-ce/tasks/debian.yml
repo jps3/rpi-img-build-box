@@ -31,9 +31,9 @@
   register: result_add_apt_repo
   when: result_add_apt_key is success
 
-- name: Install docker-ce package(s)
+- name: Install docker-ce package
   apt:
-    pkg: "{{ docker_packages }}"
+    pkg: "{{ docker_pkgname }}"
     state: present
   register: result_install_docker_packages
   when: result_add_apt_repo is success

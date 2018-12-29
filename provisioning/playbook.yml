@@ -7,11 +7,25 @@
 
   vars:
     kernel_arch: "armhf"
+    #
+    # docker_version can be used to specify a specific
+    # version such as '18.06.0~ce~3-0~ubuntu', otherwise
+    # leave as an empty string ("") to install the
+    # latest.
+    #
+    # You can use the command apt-get madison docker-ce
+    # on a Debian-based system where the Docker apt
+    # repos have already been configured to get the
+    # correct version information string.
+    #
+    docker_version: ""
+    docker_group_users:
+      - vagrant
 
   roles:
     - common
-    - docker-ce
-    - pi-gen
     - vagrant-user-env
-    - img-workspace
-    - linux-kernel-crossbuild
+    - docker-ce
+    #- pi-gen
+    #- img-workspace
+    #- linux-kernel-crossbuild

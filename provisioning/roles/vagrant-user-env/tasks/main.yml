@@ -31,12 +31,6 @@
   become_user: vagrant
   become: yes
 
-- name: Add vagrant to group docker
-  user:
-    name: vagrant
-    groups: docker
-  when: result_install_docker_packages is success
-
 - name: Ensure direnv started in user .bashrc
   lineinfile:
     path: /home/vagrant/.bashrc
