@@ -1,0 +1,2 @@
+NOOBS_NAME="Raspbian Lite for LUAML"
+NOOBS_DESCRIPTION="A port of Debian with modifications for use with LUAML RPi's controlling and/or supporting 'maker space' devices."

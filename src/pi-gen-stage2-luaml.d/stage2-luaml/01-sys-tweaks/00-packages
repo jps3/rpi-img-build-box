@@ -1,0 +1,7 @@
+jq
+apt-transport-https
+ca-certificates
+lsb-release
+rsync
+bsdtar
+chrony
