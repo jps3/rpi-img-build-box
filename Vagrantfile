@@ -4,20 +4,20 @@
 Vagrant.configure("2") do |config|
   config.vm.box = "bento/debian-9.5"
 
-  config.vm.provider :virtualbox do |v|
-    v.default_nic_type = "virtio"
-    v.name = "pi-img-dev-box"
-    #v.linked_clone = true
-    v.cpus = "4"
-    v.memory = "4096"
-    v.customize ["modifyvm", :id, "--ioapic", "on"]
-    v.customize ["modifyvm", :id, "--audio", "none"]
+  config.vm.provider :virtualbox do |vb|
+    vb.default_nic_type = "virtio"
+    vb.linked_clone = true
+    vb.cpus = "4"
+    vb.memory = "4096"
+    vb.customize ["modifyvm", :id, "--ioapic", "on"]
+    vb.customize ["modifyvm", :id, "--audio", "none"]
   end
 
-  #config.vm.hostname = "pi-img-dev-box"
-
-  # Set the name of the VM. See: http://stackoverflow.com/a/17864388/100134
-  config.vm.define :pi_img_dev_box do |pigen|
+  config.vm.provider :libvirt do |lv, override|
+    override.vm.box = "debian/stretch64"
+    lv.cpus = "4"
+    lv.memory = "4096"
+    lv.machine_virtual_size = 40
   end
 
   config.vm.provision :ansible_local do |ansible|
@@ -26,4 +26,3 @@ Vagrant.configure("2") do |config|
     ansible.playbook = "provisioning/playbook.yml"
   end
 end
-
