@@ -12,6 +12,7 @@ common_packages:
   - apt-transport-https
   - binutils
   - debian-goodies
+  - direnv
   - e2fsprogs
   - git
   - htop
