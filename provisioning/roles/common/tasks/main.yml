@@ -41,7 +41,7 @@
 - debug: 'msg="Gap after partition 1: {{gap_kb}} KiB"'
 
 - name: Grow a too-small partition to fill maximum space
-  command: 'parted --pretend-input-tty /dev/vda resizepart 1 Yes 100%'
+  command: 'parted ---pretend-input-tty /dev/vda resizepart 1 Yes 100%'
   when: gap_kb|int > 1024
 
 - name: Grow filesystem to fill maximum block size
