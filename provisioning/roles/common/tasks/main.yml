@@ -34,8 +34,9 @@
     number: 1
   register: partinfo
 
-- set_fact:
-  gap_kb: "{{ partinfo.disk.size - partinfo.partitions[0].end }}"
+- name: Set gab_kb fact
+  set_fact:
+    gap_kb: "{{ partinfo.disk.size - partinfo.partitions[0].end }}"
 
 - debug: 'msg="Gap after partition 1: {{gap_kb}} KiB"'
 
