@@ -26,6 +26,6 @@
     - common
     - vagrant-user-env
     - docker-ce
-    #- pi-gen
-    #- img-workspace
-    #- linux-kernel-crossbuild
+    - pi-gen
+    - img-workspace
+    - linux-kernel-crossbuild
