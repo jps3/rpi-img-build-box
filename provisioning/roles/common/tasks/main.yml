@@ -28,3 +28,14 @@
     replace: '\1="us"'
   notify: regenerate keyboard-configuration
 
+- name: Partition information
+  parted:
+    device: /dev/vda
+    number: 1
+  register: partinfo
+
+- set_fact:
+  gap_kb: "{{ partinfo.disk.size - partinfo.partitions[0].end }}"
+
+- debug: 'msg="Gap after partition 1: {{gap_kb}} KiB"'
+

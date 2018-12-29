@@ -11,6 +11,7 @@ common_packages:
   - ack
   - apt-transport-https
   - debian-goodies
+  - e2fsprogs
   - git
   - htop
   - jq
