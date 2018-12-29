@@ -28,6 +28,7 @@
     replace: '\1="us"'
   notify: regenerate keyboard-configuration
 
+# https://github.com/ansible/ansible/issues/23914
 - name: Partition information
   parted:
     device: /dev/vda
