@@ -243,8 +243,12 @@ fi
 #  Custom *.deb files
 # ---------------------------------------------------------------------- #
 
-if [[ -d stage2-aml/99-custom-deb-pkgs/files/ ]]; then
-    cp -v src/*.deb stage2-aml/99-custom-deb-pkgs/files/
+if [[ -d stage2-luaml/99-custom-deb-pkgs/files/ ]]; then
+    find /vagrant/src -type d -iname debian -exec dirname {} \; | \
+    while read debdir; do
+        dpkg-deb -b "${debdir}"
+    done
+    cp -v /vagrant/src/*.deb stage2-luaml/99-custom-deb-pkgs/files/ && \
 fi
 
 
