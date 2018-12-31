@@ -4,7 +4,7 @@
 #                                                                        #
 #  This script's purpose is to prepare the primary Git repository's      #
 #  stage* steps and files, and the build scripts such that the           #
-#  addition of `stage2-aml` will work correctly.                         #
+#  addition of `stage2-luaml` will work correctly.                         #
 #                                                                        #
 #  Additionally, many of the default settings made are aimed at          #
 #  defaults for UK English locale and keyboard layouts, which is         #
@@ -217,7 +217,7 @@ set +x
 
 
 # ---------------------------------------------------------------------- #
-#  config-aml
+#  config-luaml
 # ---------------------------------------------------------------------- #
 
 set -o noclobber
@@ -231,11 +231,11 @@ set +o noclobber
 
 
 # ---------------------------------------------------------------------- #
-#  Copy in stage2-aml
+#  Copy in stage2-luaml
 # ---------------------------------------------------------------------- #
 
-if [[ -x /vagrant/src/stage2-aml ]]; then
-    rsync -crlptog --exclude .git /vagrant/src/stage2-aml .
+if [[ -x /vagrant/src/stage2-luaml ]]; then
+    rsync -crlptog --exclude .git /vagrant/src/stage2-luaml .
 fi
 
 
