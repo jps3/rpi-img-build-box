@@ -1,5 +1,8 @@
 Package: set-distinct-hostname
-Version: 0.5.1
-Maintainer: LU Wilbur IT Manager
+Version: 0.6-1
+Section: contrib
+Priority: optional
 Architecture: all
-Description: Attempts to set distinct hostname based on a prefix and the last half of the default route's interface's MAC address normalized to uppercase and with ':' characters removed.
+Depends: bash (>= 4.4), coreutils, grep, net-tools, sed, systemd
+Maintainer: inwit@lehigh.edu
+Description: Set a distinct hostname based on a default/defined prefix and last half of default route interface's MAC address (uppercase and with ':' removed).
