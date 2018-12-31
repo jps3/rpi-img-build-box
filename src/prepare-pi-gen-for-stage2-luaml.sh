@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash -ex
 
 # ---------------------------------------------------------------------- #
 #                                                                        #
@@ -172,7 +172,7 @@ done
 #  Set file flags to skip unnecessary stage3+ builds and image exports
 # ---------------------------------------------------------------------- #
 
-set -x
+set +e
 
 touch stage{3..5}/SKIP
 
@@ -180,40 +180,7 @@ find stage{2..5} -type f -name "EXPORT_*" -exec dirname {} \; | \
     uniq | \
     xargs -I{} touch {}/SKIP_IMAGES
 
-set +x
-
-
-# # ---------------------------------------------------------------------- #
-# #  Patch `build.sh`
-# # ---------------------------------------------------------------------- #
-# 
-# set +e
-# patch -p0 <<EOF
-# --- build.sh
-# +++ build.sh
-# @@ -184,6 +184,19 @@
-#  export QUILT_NO_DIFF_TIMESTAMPS=1
-#  export QUILT_REFRESH_ARGS="-p ab"
-# 
-# +
-# +export TIMEZONE
-# +export ROOT_PASSWORD_LENGTH
-# +export SSH_PUBKEYS
-# +export SALTSTACK_VERSION
-# +export SALT_MASTER
-# +echo   TIMEZONE=\$TIMEZONE
-# +echo   ROOT_PASSWORD_LENGTH=\$ROOT_PASSWORD_LENGTH
-# +echo   SSH_PUBKEYS=\$SSH_PUBKEYS
-# +echo   SALTSTACK_VERSION=\$SALTSTACK_VERSION
-# +echo   SALT_MASTER=\$SALT_MASTER
-# +
-# +
-#  # shellcheck source=scripts/common
-#  source "${SCRIPT_DIR}/common"
-#  # shellcheck source=scripts/dependencies_check
-# 
-# EOF
-# set -e
+set -e
 
 
 # ---------------------------------------------------------------------- #
@@ -234,8 +201,8 @@ set +o noclobber
 #  Copy in stage2-luaml
 # ---------------------------------------------------------------------- #
 
-if [[ -x /vagrant/src/stage2-luaml ]]; then
-    rsync -crlptog --exclude .git /vagrant/src/stage2-luaml .
+if [[ -d /vagrant/src/pi-gen-stage2-luaml.d ]]; then
+    rsync -crlptog --exclude .git /vagrant/src/pi-gen-stage2-luaml.d/ ./
 fi
 
 
@@ -246,9 +213,9 @@ fi
 if [[ -d stage2-luaml/99-custom-deb-pkgs/files/ ]]; then
     find /vagrant/src -type d -iname debian -exec dirname {} \; | \
     while read debdir; do
-        dpkg-deb -b "${debdir}"
+        fakeroot dpkg-deb -b "${debdir}"
     done
-    cp -v /vagrant/src/*.deb stage2-luaml/99-custom-deb-pkgs/files/ && \
+    cp -v /vagrant/src/*.deb stage2-luaml/99-custom-deb-pkgs/files/
 fi
 
 
