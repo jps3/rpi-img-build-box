@@ -7,7 +7,7 @@
   git:
     repo: "{{ git_repo_stub }}/{{ item }}.git"
     depth: 1
-    version: "HEAD"
+    version: "master"
     dest: "~/build/{{ item }}"
   with_items: "{{ git_repos }}"
   become_user: vagrant
