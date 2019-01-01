@@ -1,4 +1,4 @@
-#!/bin/bash -ex
+#!/bin/bash -e
 
 # ---------------------------------------------------------------------- #
 #                                                                        #
@@ -12,17 +12,21 @@
 #                                                                        #
 # ---------------------------------------------------------------------- #
 
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
-if [[ $USER != "vagrant" ]]; then
-    log "Must be run as user 'vagrant' not '$USER'."
-    exit -1
-fi
+shopt -u sourcepath
 
 
 # ---------------------------------------------------------------------- #
 #  VARS
 # ---------------------------------------------------------------------- #
 
+#
+# Identifying these requires periodically reviewing the contents
+# of the official pi-gen repository's stage* directories for 
+# files like *-packages and looking at the contents for items
+# not wanted or needed for stage2-luaml builds (ie. cruft)
+#
 unwanted_package_names=(
     "apt-listchanges"
     "avahi-daemon"
@@ -58,9 +62,7 @@ unwanted_package_names=(
 #  Functions
 # ---------------------------------------------------------------------- #
 
-function log () {
-    >&2 printf "[INFO] %-s\n" "$*"
-}
+source /vagrant/src/lib-colors-logging.sh
 
 ##
 ##  remove_unwanted_package_names_from_file()
@@ -93,26 +95,42 @@ function remove_unwanted_package_names_from_file () {
 #  BEGIN                                                                 #
 # ---------------------------------------------------------------------- #
 
+print_header "BEGIN"
+
+if [[ $USER != "vagrant" ]]; then
+    error_and_exit "Must be run as user 'vagrant' not '$USER'."
+fi
+
 cd ~/build/pi-gen/
+info "PWD" "$(pwd)"
 
 
 # ---------------------------------------------------------------------- #
+#  stage0/01=locale
+# ---------------------------------------------------------------------- #
+
+print_header "stage0/01-locale"
+
+#
 #  Set debconf locale and keyboard settings to US English
 #  Note: The debconf settings are made **BEFORE** the relevant 
 #        packages (ie locales, keyboard-configuration, etc.) are 
 #        installed.
-# ---------------------------------------------------------------------- #
+#
 
+target="stage0/01-locale/00-debconf"
 sed -i \
     -e '/^[^#]/ s/en_GB/en_US/g' \
-    stage0/01-locale/00-debconf
+    "${target}"
+log "Changed ${target} instances of en_GB to en_US"
 
 
 # ---------------------------------------------------------------------- #
 #  Set base pi-gen build script 'config' file env vars
 # ---------------------------------------------------------------------- #
 
-set -o noclobber
+print_header "pi-gen config file"
+
 cat <<EOF >config
 IMG_NAME=""
 APT_PROXY="http://172.17.0.1:3142"
@@ -120,51 +138,59 @@ FIRST_USER_NAME="luamluser"
 FIRST_USER_PASS="$(pwgen -1 32 1)"
 ENABLE_SSH="1"
 EOF
-set +o noclobber
+log "Added file 'config'"
 
+
+# ---------------------------------------------------------------------- #
+#  stage2/01-sys-tweaks/
+# ---------------------------------------------------------------------- #
+
+print_header "stage1/01-sys-tweaks"
+
+target="stage1/01-sys-tweaks/00-run.sh"
 sed -E -i \
     -e '/FIRST_USER_PASS.* chpasswd/ a passwd -l $FIRST_USER_NAME ' \
     -e '/root:root.*chpasswd/ a passwd -l root' \
-    stage1/01-sys-tweaks/00-run.sh
+    "${target}"
+log "Changed ${target} to disable first user"
 
 
 # ---------------------------------------------------------------------- #
-#
 #  stage2/01-sys-tweaks/
-# 
 # ---------------------------------------------------------------------- #
 
+print_header "stage2/01-sys-tweaks"
+
+target="stage2/01-sys-tweaks/00-debconf"
 sed -i \
     -e '/^[^#]/ s/Generic 105-key (Intl) PC/Generic 104-key PC/' \
     -e '/^[^#]/ s/select\([[:space:]]\)\{1,\}gb/select\1us/' \
     -e '/^[^#]/ s/English (UK)/English (US)/' \
-    stage2/01-sys-tweaks/00-debconf
+    "${target}"
+log "Changed ${target} to change from GB to US keyboard"
 
+target="stage2/01-sys-tweaks/files/console-setup"
 sed -i \
     -e 's/FONTFACE=.*$/FONTFACE="Terminus"/' \
     -e 's/FONTSIZE=.*$/FONTSIZE="8x16"/' \
-    stage2/01-sys-tweaks/files/console-setup
+    "${target}"
+log "Changed ${target} to use Terminus font"
 
 
 # ---------------------------------------------------------------------- #
 #  Remove unwanted package names from "*-packages*" files
 # ---------------------------------------------------------------------- #
 
+print_header "Remove unwanted package names from stages"
+
 packages_files=( 
     $(find stage{0..2} -type f -name "*-packages*") 
     )
-
-log_lines="$(
-    printf \
-        "Found %i files like '*-packages*' ..." \
-        "${#packages_files[@]}"
-    )"
-log "$log_lines"
+info "Found *-packages files" "${#packages_files[@]}"
 
 for packages_file in "${packages_files[@]}"; do
-    log_line="$(printf "> Processing: %45s" "$packages_file")"
-    log "$log_line"
     remove_unwanted_package_names_from_file "$packages_file"
+    log "Processed $packages_file to remove unwanted packages"
 done
 
 
@@ -172,49 +198,57 @@ done
 #  Set file flags to skip unnecessary stage3+ builds and image exports
 # ---------------------------------------------------------------------- #
 
-set +e
+print_header "SKIP and SKIP_IMAGES file flags"
 
 touch stage{3..5}/SKIP
+log "Set SKIP flag for stages 3 to 5"
 
 find stage{2..5} -type f -name "EXPORT_*" -exec dirname {} \; | \
     uniq | \
     xargs -I{} touch {}/SKIP_IMAGES
-
-set -e
+log "Set SKIP_IMAGES flags for stages 2 to 5 where EXPORT_* flag exists"
 
 
 # ---------------------------------------------------------------------- #
 #  config-luaml
 # ---------------------------------------------------------------------- #
 
-set -o noclobber
+print_header "config-luaml"
+
 cat <<EOF >config-luaml
 TIMEZONE="America/New_York"
 ROOT_PASSWORD_LENGTH="22"
 SALTSTACK_VERSION="stable 2017.7"
 SALT_MASTER=""
 EOF
-set +o noclobber
+log "Created local config-luaml file"
 
 
 # ---------------------------------------------------------------------- #
 #  Copy in stage2-luaml
 # ---------------------------------------------------------------------- #
 
+print_header "stage2-luaml"
+
 if [[ -d /vagrant/src/pi-gen-stage2-luaml.d ]]; then
     rsync -crlptog --exclude .git /vagrant/src/pi-gen-stage2-luaml.d/ ./
 fi
+log "Copied in stage2-luaml dir tree"
 
 
 # ---------------------------------------------------------------------- #
 #  Custom *.deb files
 # ---------------------------------------------------------------------- #
 
+print_header "stage2-luaml/99-custom-deb-pkgs"
+
 if [[ -d stage2-luaml/99-custom-deb-pkgs/files/ ]]; then
     find /vagrant/src -type d -iname debian -exec dirname {} \; | \
     while read debdir; do
         fakeroot dpkg-deb -b "${debdir}"
+        log "Built deb pkg for ${debdir}"
     done
+    log "Copying *.deb packages to destination ..."
     cp -v /vagrant/src/*.deb stage2-luaml/99-custom-deb-pkgs/files/
 fi
 
@@ -222,3 +256,5 @@ fi
 # ---------------------------------------------------------------------- #
 #  END                                                                   #
 # ---------------------------------------------------------------------- #
+
+print_header "END"
