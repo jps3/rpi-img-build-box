@@ -28,25 +28,52 @@
     replace: '\1="us"'
   notify: regenerate keyboard-configuration
 
+
+#
+# TODO: The following tasks need to be restructured to 
+#       remove the kludgy 'when' conditionals
+#
+
+- name: Get name of parent device for /
+  shell: findmnt -enU -o SOURCE -t ext4 -M / | xargs lsblk -no pkname
+  register: root_dev_name
+
+- debug: msg="root_dev_name is {{ root_dev_name }}"
+
+- name: Check that parent device for / exists
+  stat:
+    path: /dev/{{ root_dev_name.stdout }}
+  register: root_dev
+  when: root_dev_name is success and root_dev_name.stdout != ""
+
+- debug: msg="root_dev is {{ root_dev }}"
+
 # https://github.com/ansible/ansible/issues/23914
 - name: Partition information
   parted:
-    device: /dev/vda
+    device: /dev/{{ root_dev_name.stdout }}
     number: 1
   register: partinfo
+  when: root_dev is success and root_dev is not skipped and root_dev.stat.exists == True
 
-- name: Set gab_kb fact
+- debug: msg="partinfo is {{ partinfo }}"
+
+- name: Set gap_kb fact
   set_fact:
     gap_kb: "{{ partinfo.disk.size - partinfo.partitions[0].end }}"
+  when: partinfo is defined and partinfo is not skipped and partinfo is success
 
 - debug: 'msg="Gap after partition 1: {{gap_kb}} KiB"'
+  when: gap_kb is defined
 
 - name: Grow a too-small partition to fill maximum space
   command: 'parted ---pretend-input-tty /dev/vda resizepart 1 Yes 100%'
-  when: gap_kb|int > 1024
+  register: resize_partition
+  when: gab_kb is defined and gap_kb|int > 1024
 
 - name: Grow filesystem to fill maximum block size
   filesystem:
     fstype: ext4
-    dev: /dev/vda1
+    dev: /dev/{{ root_dev_name.stdout }}
     resizefs: yes
+  when: resize_partition is defined and resize_partition is not skipped and resize_partition is success
