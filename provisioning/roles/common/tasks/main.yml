@@ -37,9 +37,8 @@
 - name: Get name of parent device for /
   shell: findmnt -enU -o SOURCE -t ext4 -M / | xargs lsblk -no pkname
   register: root_dev_name
-  #when:
 
-- debug: msg="root_dev_name is {{ root_dev_name }}"
+#- debug: 'msg="root_dev_name is {{ root_dev_name }}"'
 
 - name: Check that parent device for / exists
   stat:
@@ -47,7 +46,7 @@
   register: root_dev
   when: root_dev_name is success and root_dev_name.stdout != ""
 
-- debug: msg="root_dev is {{ root_dev }}"
+#- debug: 'msg="root_dev is {{ root_dev }}"'
 
 # https://github.com/ansible/ansible/issues/23914
 - name: Partition information
@@ -57,24 +56,31 @@
   register: partinfo
   when: root_dev is success and root_dev is not skipped and root_dev.stat.exists == True
 
-- debug: msg="partinfo is {{ partinfo }}"
+#- debug: 'msg="partinfo is {{ partinfo }}"'
 
 - name: Set gap_kb fact
   set_fact:
     gap_kb: "{{ partinfo.disk.size - partinfo.partitions[0].end }}"
   when: partinfo is defined and partinfo is not skipped and partinfo is success
 
-- debug: 'msg="Gap after partition 1: {{gap_kb}} KiB"'
-  when: gap_kb is defined
+#- debug: 'msg="Gap after partition 1: {{gap_kb}} KiB"'
+
+#- debug: 'msg="gap_kb|int is {{ gap_kb|int }}"'
+
+#- debug: 'msg="gap_kb|int > 1024 is {{ gap_kb|int > 1024 }}"'
 
 - name: Grow a too-small partition to fill maximum space
   command: 'parted ---pretend-input-tty /dev/vda resizepart 1 Yes 100%'
   register: resize_partition
-  when: gab_kb is defined and gap_kb|int > 1024
+  when: gap_kb is defined and gap_kb|int > 1024
+
+- name: Re-read parition table
+  command: partprobe /dev/{{ root_dev_name.stdout }}
+  when: resize_partition is success
 
 - name: Grow filesystem to fill maximum block size
   filesystem:
     fstype: ext4
-    dev: /dev/{{ root_dev_name.stdout }}
+    dev: /dev/{{ root_dev_name.stdout }}1
     resizefs: yes
-  when: resize_partition is defined and resize_partition is not skipped and resize_partition is success
+  when: resize_partition is success
