@@ -25,7 +25,7 @@ EOF
 
 # /boot/ssh[.txt] is a flag used by a Raspbian service unit to
 # automatically (force) ssh to start at boot
-install -v -m 644 files/ssh.txt			"${ROOTFS_DIR}/boot/"
+touch "${ROOTFS_DIR}/boot/ssh.txt"
 
 install -v -m 755 -d                    "${ROOTFS_DIR}/root/.ssh"
 install -v -m 600 files/authorized_keys "${ROOTFS_DIR}/root/.ssh/"
