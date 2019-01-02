@@ -24,3 +24,13 @@
   docker_service:
     project_src: "/home/vagrant/build/pi-gen/"
   when: result_docker_service_running is success
+
+- name: Run prepare-pi-gen-for-stage2-luaml script
+  shell: /vagrant/src/prepare-pi-gen-for-stage2-luaml.sh >/dev/null
+  args:
+    chdir: /home/vagrant/build/pi-gen/
+    creates: stage2-luaml/prerun.sh
+  become_user: vagrant
+  become: yes
+  register: stage2_luaml
+  when: result_repo is success
