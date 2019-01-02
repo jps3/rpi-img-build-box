@@ -30,13 +30,14 @@
 
 
 #
-# TODO: The following tasks need to be restructured to 
+# TODO: The following tasks need to be restructured to
 #       remove the kludgy 'when' conditionals
 #
 
 - name: Get name of parent device for /
   shell: findmnt -enU -o SOURCE -t ext4 -M / | xargs lsblk -no pkname
   register: root_dev_name
+  #when:
 
 - debug: msg="root_dev_name is {{ root_dev_name }}"
 
