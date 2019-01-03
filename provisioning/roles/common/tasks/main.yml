@@ -43,14 +43,14 @@
       xargs lsblk -no pkname
   register: identify_root_fs_parent_device
 
-#- debug: 'msg="identify_root_fs_parent_device is {{ identify_root_fs_parent_device }}"'
+
+# ------------------------------------------------------------------- #
 
 - name: Set fact root_fs_parent_device_path
   set_fact:
     root_fs_parent_device_path: /dev/{{ identify_root_fs_parent_device.stdout_lines[0] }}
   when: identify_root_fs_parent_device.stdout_lines|length > 0
 
-#- debug: 'msg="fact: root_fs_parent_device_path is {{ root_fs_parent_device_path }}"'
 
 # ------------------------------------------------------------------- #
 
@@ -60,7 +60,6 @@
   register: root_fs_parent_device
   when: root_fs_parent_device_path is defined
 
-#- debug: 'msg="root_fs_parent_device is {{ root_fs_parent_device }}"'
 
 # ------------------------------------------------------------------- #
 
@@ -71,45 +70,45 @@
     number: 1
   register: partinfo
   when: root_fs_parent_device is defined
-        and 
+        and
+        root_fs_parent_device is not skipped
+        and
         root_fs_parent_device.stat.exists
 
-#- debug: 'msg="partinfo is {{ partinfo }}"'
 
 # ------------------------------------------------------------------- #
 
 - name: Set gap_kb fact
   set_fact:
     gap_kb: "{{ partinfo.disk.size - partinfo.partitions[0].end }}"
-  when: partinfo is defined
+  when: root_fs_parent_device is defined
+        and
+        partinfo is not skipped
+        and
+        partinfo is defined
 
-#- debug: 'msg="Gap after partition 1: {{ gap_kb }} KiB"'
-#- debug: 'msg="gap_kb|int is {{ gap_kb|int }}"'
-#- debug: 'msg="gap_kb|int > 1024 is {{ gap_kb|int > 1024 }}"'
 
 # ------------------------------------------------------------------- #
 
 - name: Resize partition to fill maximum space
   command: >-
-    parted 
-      ---pretend-input-tty 
-      {{ root_fs_parent_device_path }} 
-      resizepart 1 
-      Yes 
+    parted
+      ---pretend-input-tty
+      {{ root_fs_parent_device_path }}
+      resizepart 1
+      Yes
       100%
   register: resize_partition
   when: gap_kb is defined and gap_kb|int > 1024
 
-#- debug: 'msg="resize_partition is {{ resize_partition }}"'
 
 # ------------------------------------------------------------------- #
 
 - name: Re-read parition table
   command: partprobe {{ root_fs_parent_device_path }}
   register: reread_partition_table
-  when: resize_partition is success
+  when: resize_partition is not skipped
 
-#- debug: 'msg="reread_partition_table is {{ reread_partition_table }}"'
 
 # ------------------------------------------------------------------- #
 
@@ -119,6 +118,5 @@
     dev: "{{ root_fs_parent_device_path + partinfo.partitions[0].num|string }}"
     resizefs: yes
   register: filesystem_grown
-  when: resize_partition is success
+  when: resize_partition is not skipped
 
-#- debug: 'msg="filesystem_grown is {{ filesystem_grown }}"'#
