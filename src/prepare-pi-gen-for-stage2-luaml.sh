@@ -242,15 +242,19 @@ log "Copied in stage2-luaml dir tree"
 
 print_header "stage2-luaml/99-custom-deb-pkgs"
 
-if [[ -d stage2-luaml/99-custom-deb-pkgs/files/ ]]; then
-    find /vagrant/src -type d -iname debian -exec dirname {} \; | \
+find /vagrant/src -type d -iname debian -exec dirname {} \; | \
     while read debdir; do
+        info "dpkg-deb bulid for ..." "${debdir}"
         fakeroot dpkg-deb -b "${debdir}"
-        log "Built deb pkg for ${debdir}"
+        if [[ $? -ne 0 ]]; then
+            warn "The dpkg-deb build returned $?"
+        else
+            log "The dpkg-deb build returned $?"
+        fi
     done
-    log "Copying *.deb packages to destination ..."
-    cp -v /vagrant/src/*.deb stage2-luaml/99-custom-deb-pkgs/files/
-fi
+
+log "Copying *.deb packages to destination ..."
+cp -v /vagrant/src/*.deb stage2-luaml/99-custom-deb-pkgs/files/
 
 
 # ---------------------------------------------------------------------- #
