@@ -29,58 +29,96 @@
   notify: regenerate keyboard-configuration
 
 
+# ------------------------------------------------------------------- #
 #
-# TODO: The following tasks need to be restructured to
-#       remove the kludgy 'when' conditionals
+#  The following is a fix for the default libvirt Vagrant box
+#  from debian/ which does not provide an automagically-resizing
+#  root filesystem partition.
 #
+# ------------------------------------------------------------------- #
 
-- name: Get name of parent device for /
-  shell: findmnt -enU -o SOURCE -t ext4 -M / | xargs lsblk -no pkname
-  register: root_dev_name
+- name: Identify root filesystem's parent device path
+  shell: >-
+    findmnt -enU -o SOURCE -t ext4 -M /  |
+      xargs lsblk -no pkname
+  register: identify_root_fs_parent_device
 
-#- debug: 'msg="root_dev_name is {{ root_dev_name }}"'
+#- debug: 'msg="identify_root_fs_parent_device is {{ identify_root_fs_parent_device }}"'
 
-- name: Check that parent device for / exists
+- name: Set fact root_fs_parent_device_path
+  set_fact:
+    root_fs_parent_device_path: /dev/{{ identify_root_fs_parent_device.stdout_lines[0] }}
+  when: identify_root_fs_parent_device.stdout_lines|length > 0
+
+#- debug: 'msg="fact: root_fs_parent_device_path is {{ root_fs_parent_device_path }}"'
+
+# ------------------------------------------------------------------- #
+
+- name: Get stat information for parent device of root fs device
   stat:
-    path: /dev/{{ root_dev_name.stdout }}
-  register: root_dev
-  when: root_dev_name is success and root_dev_name.stdout != ""
+    path: "{{ root_fs_parent_device_path }}"
+  register: root_fs_parent_device
+  when: root_fs_parent_device_path is defined
 
-#- debug: 'msg="root_dev is {{ root_dev }}"'
+#- debug: 'msg="root_fs_parent_device is {{ root_fs_parent_device }}"'
+
+# ------------------------------------------------------------------- #
 
 # https://github.com/ansible/ansible/issues/23914
-- name: Partition information
+- name: Get parted information for parent device of root fs device
   parted:
-    device: /dev/{{ root_dev_name.stdout }}
+    device: "{{ root_fs_parent_device_path }}"
     number: 1
   register: partinfo
-  when: root_dev is success and root_dev is not skipped and root_dev.stat.exists == True
+  when: root_fs_parent_device is defined
+        and 
+        root_fs_parent_device.stat.exists
 
 #- debug: 'msg="partinfo is {{ partinfo }}"'
+
+# ------------------------------------------------------------------- #
 
 - name: Set gap_kb fact
   set_fact:
     gap_kb: "{{ partinfo.disk.size - partinfo.partitions[0].end }}"
-  when: partinfo is defined and partinfo is not skipped and partinfo is success
+  when: partinfo is defined
 
-#- debug: 'msg="Gap after partition 1: {{gap_kb}} KiB"'
-
+#- debug: 'msg="Gap after partition 1: {{ gap_kb }} KiB"'
 #- debug: 'msg="gap_kb|int is {{ gap_kb|int }}"'
-
 #- debug: 'msg="gap_kb|int > 1024 is {{ gap_kb|int > 1024 }}"'
 
-- name: Grow a too-small partition to fill maximum space
-  command: 'parted ---pretend-input-tty /dev/vda resizepart 1 Yes 100%'
+# ------------------------------------------------------------------- #
+
+- name: Resize partition to fill maximum space
+  command: >-
+    parted 
+      ---pretend-input-tty 
+      {{ root_fs_parent_device_path }} 
+      resizepart 1 
+      Yes 
+      100%
   register: resize_partition
   when: gap_kb is defined and gap_kb|int > 1024
 
+#- debug: 'msg="resize_partition is {{ resize_partition }}"'
+
+# ------------------------------------------------------------------- #
+
 - name: Re-read parition table
-  command: partprobe /dev/{{ root_dev_name.stdout }}
+  command: partprobe {{ root_fs_parent_device_path }}
+  register: reread_partition_table
   when: resize_partition is success
 
-- name: Grow filesystem to fill maximum block size
+#- debug: 'msg="reread_partition_table is {{ reread_partition_table }}"'
+
+# ------------------------------------------------------------------- #
+
+- name: Grow root filesystem to fill maximum block size
   filesystem:
     fstype: ext4
-    dev: /dev/{{ root_dev_name.stdout }}1
+    dev: "{{ root_fs_parent_device_path + partinfo.partitions[0].num|string }}"
     resizefs: yes
+  register: filesystem_grown
   when: resize_partition is success
+
+#- debug: 'msg="filesystem_grown is {{ filesystem_grown }}"'#
