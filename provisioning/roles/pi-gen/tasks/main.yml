@@ -1,11 +1,11 @@
 ---
 # pi-gen / tasks
 
-- name: Install pi-gen support packages
+- name: install debian pi-gen support packages
   include_tasks: debian.yml
   when: ansible_distribution == 'Debian'
 
-- name: Git clone pi-gen repo
+- name: clone pi-gen Github repo
   git:
     repo: "{{ pi_gen_repo }}"
     version: "master"
@@ -16,16 +16,16 @@
   register: result_repo
   ignore_errors: yes
 
-- name: Handle apt-cacher-ng archive if file exists
+- name: handle apt-cacher-ng archive if file exists
   include_tasks: apt-cacher-ng-archive.yml
   when: result_repo is success
 
-- name: Build and run pi-gen Docker container(s)
+- name: build and run pi-gen apt-cacher-ng Docker container
   docker_service:
     project_src: "/home/vagrant/build/pi-gen/"
   when: result_docker_service_running is success
 
-- name: Run prepare-pi-gen-for-stage2-luaml script
+- name: run prepare-pi-gen-for-stage2-luaml script
   shell: /vagrant/src/prepare-pi-gen-for-stage2-luaml.sh >/dev/null
   args:
     chdir: /home/vagrant/build/pi-gen/

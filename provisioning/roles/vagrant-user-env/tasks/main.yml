@@ -1,11 +1,11 @@
 ---
 # vagrant-user-env / tasks / main
 
-- name: Check if bash_it dir exists
+- name: check for existence of ~vagrant/.bash_it
   stat: path=/home/vagrant/.bash_it
   register: bash_it
 
-- name: Git clone bash-it repo
+- name: clone bash_it Github repo to ~vagrant/
   git:
     repo: "{{ bash_it_repo }}"
     version: "master"
@@ -17,21 +17,21 @@
 
 # TODO: This should only run if not run before.
 #       (do not yet know how to implement this check)
-- name: Run bash-it installer
+- name: run the bash_it install script
   command: "~/.bash_it/install.sh --silent"
   become_user: vagrant
   become: yes
   register: bash_it_installed
   when: bash_it.stat.exists == False
 
-- name: Create build directory
+- name: create the ~vagrant/build dir
   file:
     path: "~/build"
     state: directory
   become_user: vagrant
   become: yes
 
-- name: Ensure direnv started in user .bashrc
+- name: ensure that direnv started in ~vagrant/.bashrc
   lineinfile:
     path: /home/vagrant/.bashrc
     regexp: '^.*direnv hook bash.*$'

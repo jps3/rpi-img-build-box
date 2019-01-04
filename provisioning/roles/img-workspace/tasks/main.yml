@@ -1,7 +1,7 @@
 ---
 # img-workspace/tasks/main.yml
 
-- name: Create img-workspace build directories
+- name: create img-workspace build directories
   file:
     path: "{{ item }}"
     state: directory

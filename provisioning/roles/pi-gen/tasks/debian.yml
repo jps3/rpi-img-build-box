@@ -1,7 +1,7 @@
 ---
 # pi-gen / tasks / apt
 
-- name: Install common packages
+- name: install common debian packages
   apt:
     pkg: "{{ pi_gen_support_packages }}"
     state: present

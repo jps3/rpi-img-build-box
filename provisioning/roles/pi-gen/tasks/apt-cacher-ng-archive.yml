@@ -1,13 +1,13 @@
 ---
 # pi-gen / tasks / apt-cacher-ng-archive
 
-- name: Check for existence of archive
+- name: check for existence of apt-cacher-ng tar file
   stat:
     path: /vagrant/apt-cacher-ng.tar
   register: result_archive
   when: result_repo is success
 
-- name: Expand archive
+- name: expand apt-cacher-ng tar file
   unarchive:
     src: /vagrant/apt-cacher-ng.tar
     dest: /home/vagrant/build/pi-gen/

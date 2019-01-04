@@ -7,19 +7,19 @@
 # https://docs.docker.com/install/linux/docker-ce/debian/#install-using-the-repository
 # 
 
-- name: Install packages required to support docker-ce
+- name: install packages required to support docker-ce
   apt:
     pkg: "{{ support_packages }}"
     state: present
   register: result_docker_ce_support_packages
 
-- name: Add apt key for docker repo
+- name: add apt key for docker repo
   apt_key:
     id: "{{ repo_key. id }}"
     url: "{{ repo_key.url }}"
   register: result_add_apt_key
 
-- name: Add apt docker repo
+- name: add docker repo to apt configuration
   apt_repository: 
     repo: >
       deb 
@@ -31,7 +31,7 @@
   register: result_add_apt_repo
   when: result_add_apt_key is success
 
-- name: Install docker-ce package
+- name: install docker-ce package
   apt:
     pkg: "{{ docker_pkgname }}"
     state: present

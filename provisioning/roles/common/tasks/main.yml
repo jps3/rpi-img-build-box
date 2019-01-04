@@ -1,27 +1,27 @@
 ---
 # common / tasks / main
 
-- name: Install helpful {{ ansible_distribution }} packages.
+- name: install debian packages
   include_tasks: debian.yml
   when: ansible_distribution == 'Debian'
 
-- name: Ensure timezone set to {{ local_timezone }}
+- name: ensure timezone set to {{ local_timezone }}
   timezone:
     name: "{{ local_timezone }}"
 
-- name: Ensure locale {{ local_locale }} exists
+- name: ensure locale {{ local_locale }} exists
   locale_gen:
     name: "{{ local_locale }}"
     state: present
 
-- name: Ensure keyboard defaults file uses correct model
+- name: ensure keyboard defaults file uses correct model
   replace:
     path: /etc/default/keyboard
     regexp: '^(XKBMODEL)="[^"]*"'
     replace: '\1="pc104"'
   notify: regenerate keyboard-configuration
 
-- name: Ensure keyboard defaults file uses correct layout
+- name: ensure keyboard defaults file uses correct layout
   replace:
     path: /etc/default/keyboard
     regexp: '^(XKBLAYOUT)="[^"]*"'
@@ -37,7 +37,7 @@
 #
 # ------------------------------------------------------------------- #
 
-- name: Identify root filesystem's parent device path
+- name: identify root filesystem's parent device path
   shell: >-
     findmnt -enU -o SOURCE -t ext4 -M /  |
       xargs lsblk -no pkname
@@ -46,7 +46,7 @@
 
 # ------------------------------------------------------------------- #
 
-- name: Set fact root_fs_parent_device_path
+- name: set fact root_fs_parent_device_path
   set_fact:
     root_fs_parent_device_path: /dev/{{ identify_root_fs_parent_device.stdout_lines[0] }}
   when: identify_root_fs_parent_device.stdout_lines|length > 0
@@ -54,7 +54,7 @@
 
 # ------------------------------------------------------------------- #
 
-- name: Get stat information for parent device of root fs device
+- name: get stat information for parent device of root fs device
   stat:
     path: "{{ root_fs_parent_device_path }}"
   register: root_fs_parent_device
@@ -64,7 +64,7 @@
 # ------------------------------------------------------------------- #
 
 # https://github.com/ansible/ansible/issues/23914
-- name: Get parted information for parent device of root fs device
+- name: get parted information for parent device of root fs device
   parted:
     device: "{{ root_fs_parent_device_path }}"
     number: 1
@@ -78,7 +78,7 @@
 
 # ------------------------------------------------------------------- #
 
-- name: Set gap_kb fact
+- name: set gap_kb fact
   set_fact:
     gap_kb: "{{ partinfo.disk.size - partinfo.partitions[0].end }}"
   when: root_fs_parent_device is defined
@@ -90,7 +90,7 @@
 
 # ------------------------------------------------------------------- #
 
-- name: Resize partition to fill maximum space
+- name: resize partition to fill maximum space
   command: >-
     parted
       ---pretend-input-tty
@@ -104,7 +104,7 @@
 
 # ------------------------------------------------------------------- #
 
-- name: Re-read parition table
+- name: re-read parition table
   command: partprobe {{ root_fs_parent_device_path }}
   register: reread_partition_table
   when: resize_partition is not skipped
@@ -112,11 +112,10 @@
 
 # ------------------------------------------------------------------- #
 
-- name: Grow root filesystem to fill maximum block size
+- name: grow root filesystem to fill maximum block size
   filesystem:
     fstype: ext4
     dev: "{{ root_fs_parent_device_path + partinfo.partitions[0].num|string }}"
     resizefs: yes
   register: filesystem_grown
   when: resize_partition is not skipped
-

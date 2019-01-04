@@ -1,7 +1,7 @@
 ---
 # docker-ce / tasks / main
 
-- name: Run {{ ansible_distribution }}-specific tasks for installing docker-ce
+- name: run debian-specific tasks for installing docker-ce
   include_tasks: debian.yml
   when: >
     ansible_distribution == 'Debian'
@@ -12,18 +12,18 @@
       ansible_lsb.major_release | int == 9
     )
 
-- name: Install python docker tools
+- name: knstall python support modules for Docker
   pip:
     name: "{{ python_tools }}"
 
-- name: Ensure docker service is enabled and running
+- name: ensure docker service is enabled and running
   service:
     name: docker
     state: started
     enabled: yes
   register: result_docker_service_running
 
-- name: Add specified users to group docker
+- name: add specified users to group docker
   user:
     name: "{{ item }}"
     groups: docker
