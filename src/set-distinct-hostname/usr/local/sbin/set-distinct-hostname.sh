@@ -2,7 +2,7 @@
 
 PATH=/bin:/sbin:/usr/bin:/usr/sbin
 
-DEFAULT_INTERFACE="$(route | awk '$1=="default" { print $NF }')"
+DEFAULT_INTERFACE="eth0"
 
 SYS_PATH="/sys/class/net/${DEFAULT_INTERFACE}/address"
 if [[ -s "${SYS_PATH}" ]]; then

@@ -12,5 +12,9 @@ done
 EOF
 
 on_chroot << EOF
-update-rc.d set-distinct-hostname enable
+set -e
+cd /etc/systemd/system/
+[[ ! -d network.target.wants ]] && mkdir -m 755 network.target.wants
+cd network.target.wants
+ln -sv ../set-distinct-hostname.service
 EOF
