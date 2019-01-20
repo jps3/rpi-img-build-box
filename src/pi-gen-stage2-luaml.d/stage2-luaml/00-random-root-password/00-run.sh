@@ -11,10 +11,10 @@ apt-get install -y -q jq python3
 PASSWORD_LENGTH="${ROOT_PASSWORD_LENGTH:-18}"
 echo "# INFO # PASSWORD_LENGTH is $PASSWORD_LENGTH"
 
-ROOT_PASSWORD_RECORD_FILE="${ROOTFS_DIR}/root/root-random-password-record.json"
+ROOT_PASSWORD_RECORD_FILE="${STAGE_DIR}/root-random-password-record.json"
 
 ./generate_random_password.py -l $PASSWORD_LENGTH  | \
-  tee "${ROOT_PASSWORD_RECORD_FILE}"                    | \
+  tee "${ROOT_PASSWORD_RECORD_FILE}"               | \
   jq -C .
 
 chmod 0400 "${ROOT_PASSWORD_RECORD_FILE}"

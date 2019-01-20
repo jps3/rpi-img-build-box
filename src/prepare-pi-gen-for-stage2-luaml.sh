@@ -137,6 +137,7 @@ APT_PROXY="http://172.17.0.1:3142"
 FIRST_USER_NAME="luamluser"
 FIRST_USER_PASS="$(pwgen -1 32 1)"
 ENABLE_SSH="1"
+STAGE_LIST="stage0 stage1 stage2 stage2-luaml"
 EOF
 log "Added file 'config'"
 
@@ -200,8 +201,8 @@ done
 
 print_header "SKIP and SKIP_IMAGES file flags"
 
-touch stage{3..5}/SKIP
-log "Set SKIP flag for stages 3 to 5"
+# touch stage{3..5}/SKIP
+# log "Set SKIP flag for stages 3 to 5"
 
 find stage{2..5} -type f -name "EXPORT_*" -exec dirname {} \; | \
     uniq | \

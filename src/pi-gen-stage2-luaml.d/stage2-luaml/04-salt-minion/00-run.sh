@@ -36,7 +36,8 @@ set -x
 #pkill -f salt-minion
 rm -fv /etc/salt/minion_id
 rm -fv /etc/salt/pki/minion/minion.p*
-find /etc/systemd/system -name salt-minion.service -type l -delete
+update-rc.d salt-minion disable || \
+  find /etc/systemd/system -name salt-minion.service -type l -delete
 set +x
 
 EOF
