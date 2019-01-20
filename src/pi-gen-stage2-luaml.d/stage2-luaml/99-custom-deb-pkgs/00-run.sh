@@ -11,3 +11,6 @@ for deb in *.deb; do
 done
 EOF
 
+on_chroot << EOF
+update-rc.d set-distinct-hostname enable
+EOF

@@ -3,10 +3,10 @@
 [Unit]
 DefaultDependencies=false
 #ConditionPathExists=|!/etc/hostname
-Before=network-pre.target
+Before=network.target
 Wants=network-pre.target
-After=local-fs.target
 After=sys-subsystem-net-devices-eth0.device
+After=dbus.service
 
 [Service]
 Type=oneshot

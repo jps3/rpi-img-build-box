@@ -5,8 +5,8 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin
 DEFAULT_INTERFACE="$(route | awk '$1=="default" { print $NF }')"
 
 SYS_PATH="/sys/class/net/${DEFAULT_INTERFACE}/address"
-if [[ -e "${SYS_PATH}" ]]; then
-	DEFAULT_INTERFACE_MAC="$(cat $SYS_PATH)"
+if [[ -s "${SYS_PATH}" ]]; then
+	DEFAULT_INTERFACE_MAC="$(<$SYS_PATH)"
 else
 	echo "$0: $SYS_PATH does not exist." | systemd-cat
 	exit -1
@@ -22,7 +22,7 @@ NEW_HOSTNAME="${HOSTNAME_PREFIX:-pi}-${MAC_STUB}"
 
 
 #
-# Simple check that results in existing with an error if any spaces
+# Simple check that results in exiting with an error if any spaces
 # are found in $NEW_HOSTNAME
 #
 echo "$NEW_HOSTNAME" | grep -v -q '[[:space:]]'
