@@ -4,7 +4,7 @@
 source "${BASE_DIR}"/config-luaml
 
 export SALTSTACK_VERSION
-export SALT_MASTER
+export SALT_MASTER="${SALT_MASTER:-salt}"
 
 
 echo "# ------------------------------------------------------------ #"
@@ -16,14 +16,10 @@ echo "#"
 echo "# ------------------------------------------------------------ #"
 
 on_chroot << EOF
-
-if [[ -n "$SALT_MASTER" ]]; then
-	SALT_MASTER="-A $SALT_MASTER"
-fi
-
+set -x
 curl -sLf http://bootstrap.saltstack.com | \
 	/bin/sh -s -- -X -F $SALT_MASTER $SALTSTACK_VERSION
-
+set +x
 EOF
 
 echo "# ------------------------------------------------------------ #"
