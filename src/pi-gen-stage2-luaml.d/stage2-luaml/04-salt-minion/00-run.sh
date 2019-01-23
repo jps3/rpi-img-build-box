@@ -18,7 +18,7 @@ echo "# ------------------------------------------------------------ #"
 on_chroot << EOF
 set -x
 curl -sLf http://bootstrap.saltstack.com | \
-	/bin/sh -s -- -X -F $SALT_MASTER $SALTSTACK_VERSION
+	/bin/sh -s -- -X -F -A $SALT_MASTER $SALTSTACK_VERSION
 set +x
 EOF
 
