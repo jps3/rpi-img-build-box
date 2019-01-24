@@ -221,6 +221,7 @@ TIMEZONE="America/New_York"
 ROOT_PASSWORD_LENGTH="22"
 SALTSTACK_VERSION="stable 2017.7"
 SALT_MASTER=""
+SALT_ENABLED=false
 EOF
 log "Created local config-luaml file"
 

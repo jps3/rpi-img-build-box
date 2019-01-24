@@ -31,15 +31,16 @@ echo "# Cleaning up ..."
 echo "# ------------------------------------------------------------ #"
 
 on_chroot << EOF
-
 set -x
-#pkill -f salt-minion
 rm -fv /etc/salt/minion_id
 rm -fv /etc/salt/pki/minion/minion.p*
-update-rc.d salt-minion disable || \
-  find /etc/systemd/system -name salt-minion.service -type l -delete
+if ! $SALT_ENABLED; then
+	update-rc.d salt-minion disable || \
+	  find /etc/systemd/system -name salt-minion.service -type l -delete
+else
+    echo "Leaving salt-minion enabled."
+fi
 set +x
-
 EOF
 
 echo "# ------------------------------------------------------------ #"
