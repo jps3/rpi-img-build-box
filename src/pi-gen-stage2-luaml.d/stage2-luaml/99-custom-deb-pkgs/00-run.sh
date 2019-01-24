@@ -16,5 +16,5 @@ set -e
 cd /etc/systemd/system/
 [[ ! -d network.target.wants ]] && mkdir -m 755 network.target.wants
 cd network.target.wants
-ln -sv ../set-distinct-hostname.service
+ln -svf ../set-distinct-hostname.service
 EOF
