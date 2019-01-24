@@ -17,8 +17,12 @@ echo "# ------------------------------------------------------------ #"
 
 on_chroot << EOF
 set -x
-curl -sLf http://bootstrap.saltstack.com | \
-	/bin/sh -s -- -X -F -A $SALT_MASTER $SALTSTACK_VERSION
+if ! (dpkg-query --show salt-minion); then 
+	curl -sLf http://bootstrap.saltstack.com | \
+		/bin/sh -s -- -X -F -A $SALT_MASTER $SALTSTACK_VERSION
+else
+	echo "salt-minion already installed (skipping this step)"
+fi
 set +x
 EOF
 
