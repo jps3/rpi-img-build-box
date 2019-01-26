@@ -28,4 +28,4 @@
     - docker-ce
     - pi-gen
     - img-workspace
-    - linux-kernel-crossbuild
+    #- linux-kernel-crossbuild
