@@ -24,6 +24,10 @@
   docker_service:
     project_src: "/home/vagrant/build/pi-gen/"
   when: result_docker_service_running is success
+  # The above `when` does not appear to work as intended. If the
+  # `docker-ce` playbook is not run, this still appears to attempt
+  # to play, but one would assume `result_docker_service_running`
+  # would **not** be success, no?
 
 - name: run prepare-pi-gen-for-stage2-luaml script
   shell: /vagrant/src/prepare-pi-gen-for-stage2-luaml.sh >/dev/null
