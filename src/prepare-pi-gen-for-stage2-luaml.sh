@@ -222,6 +222,7 @@ ROOT_PASSWORD_LENGTH="22"
 SALTSTACK_VERSION="stable 2017.7"
 SALT_MASTER=""
 SALT_ENABLED=false
+HOSTNAME_PREFIX=""
 EOF
 log "Created local config-luaml file"
 
@@ -236,6 +237,21 @@ if [[ -d /vagrant/src/pi-gen-stage2-luaml.d ]]; then
     rsync -crlptog --exclude .git /vagrant/src/pi-gen-stage2-luaml.d/ ./
 fi
 log "Copied in stage2-luaml dir tree"
+
+
+# ---------------------------------------------------------------------- #
+#  Copy in stage2-luaml-3dposclient
+# ---------------------------------------------------------------------- #
+
+print_header "stage2-luaml-3dposclient"
+
+if [[ -d /vagrant/src/pi-gen-stage2-luaml-3dposclient.d ]]; then
+    rsync -crlptog --exclude .git /vagrant/src/pi-gen-stage2-luaml-3dposclient.d/ ./
+fi
+log "Copied in stage2-luaml-3dposclient dir tree"
+
+log "Setting SKIP_IMAGES flag for previous stage2-luaml"
+touch stage2-luaml/SKIP_IMAGES
 
 
 # ---------------------------------------------------------------------- #

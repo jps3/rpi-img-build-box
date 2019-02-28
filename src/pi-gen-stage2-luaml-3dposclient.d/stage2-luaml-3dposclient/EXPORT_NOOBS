@@ -1,0 +1,2 @@
+NOOBS_NAME="Raspbian Lite for LUAML 3DPoS Client"
+NOOBS_DESCRIPTION="A port of Debian with modifications for use with LUAML RPi's running the 3DPrinterOS client."
