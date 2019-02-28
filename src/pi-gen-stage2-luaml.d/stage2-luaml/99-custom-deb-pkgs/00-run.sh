@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash -x
 
 cp -vf files/*.deb "${ROOTFS_DIR}/tmp/"
 
@@ -18,3 +18,7 @@ cd /etc/systemd/system/
 cd network.target.wants
 ln -svf ../set-distinct-hostname.service
 EOF
+
+sed -i -e 's/^HOSTNAME_PREFIX=.*/HOSTNAME_PREFIX="'$HOSTNAME_PREFIX'"/' "${ROOTFS_DIR}/etc/default/set-distinct-hostname-service"
+
+
