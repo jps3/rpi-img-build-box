@@ -1,0 +1,13 @@
+[Unit]
+Description=3DPrinterOS Client
+After=network.target
+
+[Service]
+WorkingDirectory=/opt/3dprinteros-client/
+ExecStart=/usr/bin/python2 launcher.py
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

@@ -128,7 +128,7 @@ tools*.tar*
 # 
 
 # 3DPrinterOS typically .img files
-3[Dd][Pp]rinter[Oo][Ss]*
+3[Dd][Pp]rinter[Oo][Ss]*.img
 
 # Vagrant-generated ssh-config
 ssh-config
