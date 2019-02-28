@@ -1,0 +1,10 @@
+---
+
+img_workspace_packages:
+  - kpartx
+  - parted
+  - pv
+  - python-passlib
+  - qemu
+  - qemu-user-static
+  - systemd-container
