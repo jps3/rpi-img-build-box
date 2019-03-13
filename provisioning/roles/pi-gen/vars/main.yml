@@ -8,7 +8,6 @@ pi_gen_support_packages:
   - dosfstools
   - grep
   - libcap2-bin
-  - pxz
   - qemu-user-static
   - quilt
   - realpath
