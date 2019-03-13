@@ -12,7 +12,7 @@
       ansible_lsb.major_release | int == 9
     )
 
-- name: knstall python support modules for Docker
+- name: install python support modules for Docker
   pip:
     name: "{{ python_tools }}"
 
