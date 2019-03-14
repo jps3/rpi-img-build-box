@@ -259,6 +259,11 @@ log "Download 3DPrinterOS client ZIP file ..."
 (cd stage2-luaml-3dposclient/02-3dpos-client/files/ && \
     wget "${SORETNIRPD3_URL}")
 
+log "Update STAGE_LIST in config ..."
+sed -i \
+    -E \
+    -e '/^STAGE_LIST/{/stage2-luaml-3dposclient/!s/^(STAGE_LIST)="([^"]*)"/\1="\2 stage2-luaml-3dposclient"/}' \
+    config
 
 # ---------------------------------------------------------------------- #
 #  Custom *.deb files
