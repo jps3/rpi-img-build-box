@@ -4,7 +4,7 @@
 #                                                                        #
 #  This script's purpose is to prepare the primary Git repository's      #
 #  stage* steps and files, and the build scripts such that the           #
-#  addition of `stage2-luaml` will work correctly.                         #
+#  addition of `stage2-luaml` will work correctly.                       #
 #                                                                        #
 #  Additionally, many of the default settings made are aimed at          #
 #  defaults for UK English locale and keyboard layouts, which is         #
@@ -15,6 +15,8 @@
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 shopt -u sourcepath
+
+SORETNIRPD3_URL="https://builds.3dprinteros.com/builds/stable/rpi/install/3DPrinterOS_Client_6.0.15stable.105_stable.zip"
 
 
 # ---------------------------------------------------------------------- #
@@ -252,6 +254,10 @@ log "Copied in stage2-luaml-3dposclient dir tree"
 
 log "Setting SKIP_IMAGES flag for previous stage2-luaml"
 touch stage2-luaml/SKIP_IMAGES
+
+log "Download 3DPrinterOS client ZIP file ..."
+(cd stage2-luaml-3dposclient/02-3dpos-client/files/ && \
+    wget "${SORETNIRPD3_URL}")
 
 
 # ---------------------------------------------------------------------- #
