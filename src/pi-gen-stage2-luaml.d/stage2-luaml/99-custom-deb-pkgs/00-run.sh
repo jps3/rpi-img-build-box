@@ -19,6 +19,6 @@ cd network.target.wants
 ln -svf ../set-distinct-hostname.service
 EOF
 
-sed -i -e 's/^HOSTNAME_PREFIX=.*/HOSTNAME_PREFIX="'$HOSTNAME_PREFIX'"/' "${ROOTFS_DIR}/etc/default/set-distinct-hostname-service"
-
-
+on_chroot << EOF
+sed -i -e 's/^HOSTNAME_PREFIX=.*/HOSTNAME_PREFIX="${HOSTNAME_PREFIX}"/' /etc/default/set-distinct-hostname-service
+EOF
