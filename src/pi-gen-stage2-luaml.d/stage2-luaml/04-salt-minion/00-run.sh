@@ -12,6 +12,7 @@ echo "# INFO"
 echo "#"
 echo "# SALT_MASTER        : '${SALT_MASTER}'"
 echo "# SALTSTACK_VERSION  : '${SALTSTACK_VERSION}'"
+echo "# SALT_ENABLED       : '${SALT_ENABLED}'"
 echo "#"
 echo "# ------------------------------------------------------------ #"
 
@@ -35,10 +36,10 @@ set -x
 rm -fv /etc/salt/minion_id
 rm -fv /etc/salt/pki/minion/minion.p*
 if ! $SALT_ENABLED; then
-	update-rc.d salt-minion disable || \
+	systemctl disable salt-minion || \
 	  find /etc/systemd/system -name salt-minion.service -type l -delete
 else
-    echo "Leaving salt-minion enabled."
+    echo "Leaving salt-minion service enabled (installer default) ..."
 fi
 set +x
 EOF

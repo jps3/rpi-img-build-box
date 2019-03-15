@@ -1,2 +1,5 @@
 NOOBS_NAME="Raspbian Lite for LUAML 3DPoS Client"
 NOOBS_DESCRIPTION="A port of Debian with modifications for use with LUAML RPi's running the 3DPrinterOS client."
+if $SALT_ENABLED; then
+    NOOBS_NAME="${NOOBS_NAME} salt_enabled ${SALT_MASTER%%.wilbur*}"
+fi

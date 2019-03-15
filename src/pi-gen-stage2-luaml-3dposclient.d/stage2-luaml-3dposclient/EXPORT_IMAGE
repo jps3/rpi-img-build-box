@@ -1,4 +1,7 @@
 IMG_SUFFIX="-luaml-3dpos"
 if [ "${USE_QEMU}" = "1" ]; then
-	export IMG_SUFFIX="${IMG_SUFFIX}-qemu"
+    export IMG_SUFFIX="${IMG_SUFFIX}-qemu"
+fi
+if $SALT_ENABLED; then
+    export IMG_SUFFIX="${IMG_SUFFIX}-salt_enabled_${SALT_MASTER%%.wilbur*}"
 fi
