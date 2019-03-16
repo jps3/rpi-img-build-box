@@ -25,7 +25,7 @@ Vagrant will use a Debian box on either VirtualBox or libvirt, and provision usi
 
 ## Steps
 
-1. Set up VirtualBox or libvirt as you prefer
+1. Set up VirtualBox or libvirt (whichever you prefer)
 1. Install Vagrant
 1. `vagrant up`
 1. `vagrant ssh`
