@@ -2,24 +2,34 @@
 
 ## Overview
 
-Vagrantfile and related requirements to customize existing (Raspberry Pi) disk images, build Raspbian images from scratch, or cross-compile custom Linux kernel for ARM.
+This repo is used to create a customized Raspbian Lite build using [pi-gen](https://github.com/RPi-distro/pi-gen), with some additions (ex. salt-minion) as both NOOBS and standard `*.img` file.
+
+Vagrant will use a Debian box on either VirtualBox or libvirt, and provision using Ansible to prepare the VM with the packages and tools necessary to more easily use the pi-gen tools.
+
+**NOTE:** The default provisioning and pi-gen customization is aimed toward building a 3DPrinterOS client.
+
 
 ## Considerations
 
-1. You really should have prior experience with setting up and running your own virtual machines.
-1. You really should have command line experience with your host operating system.
-1. You really should have command line experience with Linux.
-1. It can be helpful to have experience with Docker if you choose to use the pi-gen `build-docker.sh` script.
+1. It _really_ helps to have prior experience with Vagrant and virtual machines in general.
+1. It _really_ helps to have command line experience with your host operating system.
+1. It _really_ helps to have command line experience with Linux.
+1. It helps to have some basic experience with Docker containers.
+
 
 ## Requirements
 
 - [Virtualbox](https://www.virtualbox.org/) ([download](https://www.virtualbox.org/wiki/Downloads))
-	- _Other hypervisors will likely work fine, but this was developed and tested on Virtualbox._
-- [Packer](https://www.packer.io/docs/) ([download](https://www.packer.io/downloads.html))
+- [libvirt](https://libvirt.org/docs.html)
 - [Vagrant](https://www.vagrantup.com/docs/) ([download](https://www.vagrantup.com/downloads.html))
 
 ## Steps
 
-1. Install Virtualbox and the Extension Pack, or ensure they are current and up-to-date.
-1. Install Packer.
-1. Install Vagrant.
+1. Set up VirtualBox or libvirt as you prefer
+1. Install Vagrant
+1. `vagrant up`
+1. `vagrant ssh`
+1. `cd build/pi-gen`
+1. Edit `config` file as needed.
+1. Edit `config-luaml` as desired.
+1. `./build-docker.sh -c config-luaml`
