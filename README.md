@@ -19,8 +19,7 @@ Vagrant will use a Debian box on either VirtualBox or libvirt, and provision usi
 
 ## Requirements
 
-- [Virtualbox](https://www.virtualbox.org/) ([download](https://www.virtualbox.org/wiki/Downloads))
-- [libvirt](https://libvirt.org/docs.html)
+- [Virtualbox](https://www.virtualbox.org/) ([download](https://www.virtualbox.org/wiki/Downloads)) _or_[libvirt](https://libvirt.org/docs.html) _(tested on Ubuntu 18.04 host)_
 - [Vagrant](https://www.vagrantup.com/docs/) ([download](https://www.vagrantup.com/downloads.html))
 
 ## Steps
