@@ -1,11 +1,5 @@
 #!/bin/bash -e
 
-# shellcheck source=/home/vagrant/build/pi-gen/config-luaml
-source "${BASE_DIR}"/config-luaml
-
-export SSH_PUBKEYS
-
-
 # make initial security changes to sshd_config
 on_chroot << EOF
 cp -v /etc/ssh/sshd_config /etc/ssh/sshd_config.orig

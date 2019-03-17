@@ -1,10 +1,5 @@
 #!/bin/bash -e
 
-# shellcheck source=/home/vagrant/build/pi-gen/config-luaml
-source "${BASE_DIR}"/config-luaml
-
-export ROOT_PASSWORD_LENGTH
-
 apt-get update
 apt-get install -y -q jq python3
 

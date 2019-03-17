@@ -1,11 +1,5 @@
 #!/bin/bash -e
 
-# shellcheck source=/home/vagrant/build/pi-gen/config-luaml
-source "${BASE_DIR}"/config-luaml
-
-export TIMEZONE
-
-
 if [[ ! -z "${TIMEZONE}" ]]; then
     echo "${TIMEZONE}" > "${ROOTFS_DIR}/etc/timezone"
     rm "${ROOTFS_DIR}/etc/localtime"

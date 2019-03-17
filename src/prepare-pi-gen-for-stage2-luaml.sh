@@ -219,12 +219,14 @@ log "Set SKIP_IMAGES flags for stages 2 to 5 where EXPORT_* flag exists"
 print_header "config-luaml"
 
 cat <<EOF >config-luaml
-TIMEZONE="America/New_York"
-ROOT_PASSWORD_LENGTH="22"
-SALTSTACK_VERSION="stable 2017.7"
-SALT_MASTER=""
-SALT_ENABLED=false
-HOSTNAME_PREFIX=""
+set -x
+export TIMEZONE="America/New_York"
+export ROOT_PASSWORD_LENGTH="22"
+export SALTSTACK_VERSION="stable 2017.7"
+export SALT_MASTER=""
+export SALT_ENABLED=false
+export HOSTNAME_PREFIX=""
+set +x
 EOF
 log "Created local config-luaml file"
 
@@ -264,6 +266,7 @@ sed -i \
     -E \
     -e '/^STAGE_LIST/{/stage2-luaml-3dposclient/!s/^(STAGE_LIST)="([^"]*)"/\1="\2 stage2-luaml-3dposclient"/}' \
     config
+
 
 # ---------------------------------------------------------------------- #
 #  Custom *.deb files

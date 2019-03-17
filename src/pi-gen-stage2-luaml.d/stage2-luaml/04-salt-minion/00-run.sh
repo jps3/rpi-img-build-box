@@ -1,12 +1,5 @@
 #!/bin/bash -e
 
-# shellcheck source=/home/vagrant/build/pi-gen/config-luaml
-source "${BASE_DIR}"/config-luaml
-
-export SALTSTACK_VERSION
-export SALT_MASTER="${SALT_MASTER:-salt}"
-
-
 echo "# ------------------------------------------------------------ #"
 echo "# INFO"
 echo "#"
