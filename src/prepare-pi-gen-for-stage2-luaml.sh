@@ -222,7 +222,7 @@ cat <<EOF >config-luaml
 set -x
 export TIMEZONE="America/New_York"
 export ROOT_PASSWORD_LENGTH="22"
-export SALTSTACK_VERSION="stable 2017.7"
+export SALTSTACK_VERSION="stable 2018.3"
 export SALT_MASTER=""
 export SALT_ENABLED=false
 export HOSTNAME_PREFIX=""
