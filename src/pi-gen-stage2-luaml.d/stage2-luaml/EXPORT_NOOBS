@@ -1,2 +1,5 @@
-NOOBS_NAME="Raspbian Lite for LUAML"
+NOOBS_NAME="LUAML Rasp Lite ${IMG_NAME} ${HOSTNAME_PREFIX} 3DPrinterOS"
 NOOBS_DESCRIPTION="A port of Debian with modifications for use with LUAML RPi's controlling and/or supporting 'maker space' devices."
+if $SALT_ENABLED; then
+    NOOBS_NAME="${NOOBS_NAME} salt_master_${SALT_MASTER%%.*}"
+fi
