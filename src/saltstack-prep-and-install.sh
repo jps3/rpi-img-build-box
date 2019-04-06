@@ -78,6 +78,10 @@ else
   SALT_MASTER="-A ${SALT_MASTER}"
 fi
 
+if [[ -z "$SALTSTACK_BRANCH" ]]; then
+  error_and_exit "\$SALTSTACK_BRANCH not defined or no value assigned."
+fi
+
 if [[ -z "$SALTSTACK_VERSION" ]]; then
   error_and_exit "\$SALTSTACK_VERSION not defined or no value assigned."
 fi
@@ -245,22 +249,8 @@ debug "LSB_CODENAME: ${LSB_CODENAME}"
 DPKG_ARCH="$(dpkg --print-architecture)"
 debug "DPKG_ARCH: ${DPKG_ARCH}"
 
-#log "Adding saltstack apt signing key ..."
-#wget -O - https://repo.saltstack.com/apt/debian/${LSB_RELEASE}/${DPKG_ARCH}/archive/${SALTSTACK_VERSION}/SALTSTACK-GPG-KEY.pub | sudo apt-key add -
-
-#log "Adding saltstack apt repo ..."
-#cat <<EOF >/etc/apt/sources.list.d/saltstack.list
-#deb http://repo.saltstack.com/apt/debian/${LSB_RELEASE}/${DPKG_ARCH}/archive/${SALTSTACK_VERSION} ${LSB_CODENAME} main
-#EOF
-
-#log "Updating apt cache ..."
-#apt-get update
-
-#log "Install salt-minion v${SALTSTACK_VERSION} ..."
-#apt-get install --no-install-recommends -y salt-minion=${SALTSTACK_VERSION}+ds-1
-
 curl -sLf https://bootstrap.saltstack.com | \
-  /bin/sh -s -- -X -F ${SALT_MASTER} ${SALTSTACK_VERSION}
+  /bin/sh -s -- -X -F ${SALT_MASTER} ${SALTSTACK_BRANCH} ${SALTSTACK_VERSION}
 
 if (pgrep -c -f salt-minion >/dev/null); then
   log "Killing running salt-minion ..."

@@ -135,12 +135,14 @@ trap "cleanup_and_exit" EXIT
 
 print_header "Sanity Checks"
 
-if [[ -z "$SALTSTACK_VERSION" || -z "$SALT_MASTER_HOSTNAME" ]]; then
+if [[ -z "$SALTSTACK_BRANCH" || -z "$SALTSTACK_VERSION" || -z "$SALT_MASTER_HOSTNAME" ]]; then
   error_and_exit "Did you forget to 'sudo -E' or define any of these env vars?
+         - SALTSTACK_BRANCH
          - SALTSTACK_VERSION
          - SALT_MASTER_HOSTNAME
 "
 else
+  info "SALTSTACK_BRANCH" "$SALTSTACK_BRANCH"
   info "SALTSTACK_VERSION" "$SALTSTACK_VERSION"
   info "SALT_MASTER_HOSTNAME" "$SALT_MASTER_HOSTNAME"
 fi
@@ -434,7 +436,8 @@ EOF
 
 log "Running saltstack-prep-and-install.sh ..."
 sudo $systemd_nspawn_cmd \
-  --setenv=SALT_MASTER="${SALT_MASTER_HOSTNAME}"      \
+  --setenv=SALT_MASTER="${SALT_MASTER_HOSTNAME}"    \
+  --setenv=SALTSTACK_VERSION="${SALTSTACK_BRANCH}"  \
   --setenv=SALTSTACK_VERSION="${SALTSTACK_VERSION}" \
   /vagrant/src/saltstack-prep-and-install.sh
 
