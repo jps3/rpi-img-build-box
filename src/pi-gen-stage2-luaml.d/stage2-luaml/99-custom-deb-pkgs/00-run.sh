@@ -1,40 +1,25 @@
 #!/bin/bash -e
 
-cp -vf files/*.deb "${ROOTFS_DIR}/tmp/"
-
-echo "# ------------------------------------------------------------ #"
-echo "# INFO"
-echo "#"
-echo "# $0"
-echo "#"
-echo "# ------------------------------------------------------------ #"
-
-on_chroot << EOF
-set -x
-cd /tmp/
-pwd
-ls -1 *.deb
-for deb in *.deb; do
-  dpkg -i \$deb
-done
-set +x
+for deb in files/*.deb; do
+	log "    INFO -- Installing $deb on target ..."
+	cp -vf $deb "${ROOTFS_DIR}/tmp/"
+	on_chroot << EOF
+		set -x
+		dpkg -i $deb
 EOF
+done
 
-
+#
+# TODO: Fix this hack -- it assumes the package is installed in the previous step ... >:-/
+#
+log "    INFO -- Enabling set-distinct-hostname.service on target ..."
 on_chroot << EOF
 set -x
 systemctl enable set-distinct-hostname.service
-set +x
 EOF
 
 
-echo "# ------------------------------------------------------------ #"
-echo "# INFO"
-echo "#"
-echo "# HOSTNAME_PREFIX    : '${HOSTNAME_PREFIX}'"
-echo "#"
-echo "# ------------------------------------------------------------ #"
-
+log "     INFO -- HOSTNAME_PREFIX is \"${HOSTNAME_PREFIX}\""
 if [[ -n "${HOSTNAME_PREFIX}" ]]; then
   set -x
   sed -i \
@@ -42,7 +27,3 @@ if [[ -n "${HOSTNAME_PREFIX}" ]]; then
     "${ROOTFS_DIR}/etc/default/set-distinct-hostname-service"
   set +x
 fi
-
-echo "# ------------------------------------------------------------ #"
-echo "#  END"
-echo "# ------------------------------------------------------------ #"

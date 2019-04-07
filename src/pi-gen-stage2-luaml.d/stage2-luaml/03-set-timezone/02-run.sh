@@ -8,5 +8,5 @@ if [[ ! -z "${TIMEZONE}" ]]; then
     dpkg-reconfigure -f noninteractive tzdata
 EOF
 else
-    echo "# WARN # $TIMEZONE not specified. Leaving at default set in stage2."
+    log "    WARN -- $TIMEZONE not specified. Leaving at default set in stage2."
 fi
