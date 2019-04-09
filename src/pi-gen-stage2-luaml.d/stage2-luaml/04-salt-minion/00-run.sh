@@ -16,7 +16,7 @@ source /etc/os-release
 SALTSTACK_REPO_URL="https://repo.saltstack.com/apt/\${ID_LIKE}/\${VERSION_ID}/armhf/\${SALTSTACK_VERSION}"
 if ! (dpkg-query --show salt-minion); then 
   wget -O - \${SALTSTACK_REPO_URL}/SALTSTACK-GPG-KEY.pub | sudo apt-key add -
-  log "    deb \${SALTSTACK_REPO_URL} stretch main" | tee /etc/apt/sources.list.d/saltstack.list
+  echo "deb \${SALTSTACK_REPO_URL} stretch main" | tee /etc/apt/sources.list.d/saltstack.list
   apt-get update -y
   apt-get install -y salt-minion
 else
