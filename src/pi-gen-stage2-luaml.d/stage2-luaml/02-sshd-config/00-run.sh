@@ -21,23 +21,19 @@ EOF
 # automatically (force) ssh to start at boot
 touch "${ROOTFS_DIR}/boot/ssh.txt"
 
-install -v -m 755 -d                    "${ROOTFS_DIR}/root/.ssh"
-install -v -m 600 files/authorized_keys "${ROOTFS_DIR}/root/.ssh/"
 
 log "    # ------------------------------------------------------------ #"
-log "    # SSH_PUBKEYS[] : ${#SSH_PUBKEYS[@]} keys defined"
-if [[ "${#SSH_PUBKEYS[@]}" -gt 0 ]]; then
-	i=0
-	for k in "${SSH_PUBKEYS[@]}"; do
-		i=$(( $i + 1 ))
-		log "        $(printf "%02i %-s" $i "${p}")"
-		echo "$p" >> "${ROOTFS_DIR}/root/.ssh/authorized_keys"
-	done
-fi
+log "    # "
+log "    # SSH_PUBKEY"
 log "    # "
 log "    # ------------------------------------------------------------ #"
 
-if [[ "${#SSH_PUBKEYS[@]}" -eq 0 ]]; then
+install -v -m 755 -d                    "${ROOTFS_DIR}/root/.ssh"
+install -v -m 600 files/authorized_keys "${ROOTFS_DIR}/root/.ssh/"
+
+tmpfile=$(mktemp -t ssh_pubkey_XXXXXX)
+
+if [[ -z "${SSH_PUBKEY}" ]]; then
 	log "    "
 	log "    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! #"
 	log "    # "
@@ -48,6 +44,13 @@ if [[ "${#SSH_PUBKEYS[@]}" -eq 0 ]]; then
 	log "    "
 	log "    ... sleeping for 120 sec ... ^C to kill/quit build ..."
 	sleep 120
+else
+	echo "${SSH_PUBKEY}" | tee $tmpfile
+	if (ssh-keygen -l -f $tmpfile); then
+		cat $tmpfile >> "${ROOTFS_DIR}/root/.ssh/authorized_keys"
+		log "    INFO added SSH_PUBKEY to target /root/.ssh/authorized_keys"
+	else
+		log "    ERROR -- ssh-keygen returned an error verifying SSH_PUBKEY"
+		exit -1
+	fi
 fi
-
-
