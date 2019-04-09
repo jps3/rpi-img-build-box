@@ -19,7 +19,7 @@ systemctl enable set-distinct-hostname.service
 EOF
 
 
-log "     INFO -- HOSTNAME_PREFIX is \"${HOSTNAME_PREFIX}\""
+log "    INFO -- HOSTNAME_PREFIX is \"${HOSTNAME_PREFIX}\""
 if [[ -n "${HOSTNAME_PREFIX}" ]]; then
   set -x
   sed -i \
