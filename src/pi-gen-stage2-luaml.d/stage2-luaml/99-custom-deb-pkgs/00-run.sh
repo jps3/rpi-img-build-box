@@ -5,7 +5,7 @@ for deb in files/*.deb; do
 	cp -vf $deb "${ROOTFS_DIR}/tmp/"
 	on_chroot << EOF
 		set -x
-		dpkg -i $deb
+		dpkg -i /tmp/$(basename "$deb")
 EOF
 done
 
