@@ -1,5 +1,12 @@
 #!/bin/bash -e
 
+
+log "    # ------------------------------------------------------------ #"
+log "    # "
+log "    # sshd_config alterations"
+log "    # "
+log "    # ------------------------------------------------------------ #"
+
 # make initial security changes to sshd_config
 on_chroot << EOF
 cp -v /etc/ssh/sshd_config /etc/ssh/sshd_config.orig
@@ -16,10 +23,15 @@ sed -i -E \
     -e 's/^(#)?UsePAM.*$/UsePAM no/' \
     /etc/ssh/sshd_config
 EOF
+log "    INFO forced PermitRootLogin to 'without-password'"
+log "    INFO forced PasswordAuthentication to 'no'"
+log "    INFO forced ChallengeResponseAuthentication to 'no'"
+log "    INFO forced UsePAM to 'no'"
 
 # /boot/ssh[.txt] is a flag used by a Raspbian service unit to
 # automatically (force) ssh to start at boot
 touch "${ROOTFS_DIR}/boot/ssh.txt"
+log "    INFO set Raspbian /boot/ssh.txt flag to activate sshd by default"
 
 
 log "    # ------------------------------------------------------------ #"
