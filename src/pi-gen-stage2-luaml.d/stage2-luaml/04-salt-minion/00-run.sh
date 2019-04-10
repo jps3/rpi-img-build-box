@@ -30,7 +30,7 @@ if ! (dpkg-query --show salt-minion); then
 	    /etc/salt/minion.d/50-master.conf
   fi
 else
-  log "    salt-minion already installed (skipping this step)"
+  echo "... salt-minion already installed (skipping this step) ..."
 fi
 set +x
 EOF
