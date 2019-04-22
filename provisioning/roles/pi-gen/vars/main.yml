@@ -3,11 +3,15 @@
 
 pi_gen_support_packages:
   - bsdtar
+  - coreutils
   - curl
   - debootstrap
   - dosfstools
+  - file
+  - git
   - grep
   - libcap2-bin
+  - parted
   - qemu-user-static
   - quilt
   - realpath
