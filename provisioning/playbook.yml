@@ -21,6 +21,7 @@
     docker_version: ""
     docker_group_users:
       - vagrant
+    pigen_commit: "HEAD"
 
   roles:
     - common

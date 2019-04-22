@@ -8,7 +8,7 @@
 - name: clone pi-gen Github repo
   git:
     repo: "{{ pi_gen_repo }}"
-    version: "master"
+    version: "{{ pigen_commit | default('HEAD') }}"
     depth: 1
     dest: "~/build/pi-gen"
   become_user: vagrant
