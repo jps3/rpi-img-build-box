@@ -228,11 +228,6 @@ export SALT_MASTER=""
 export SALT_ENABLED=false
 export HOSTNAME_PREFIX=""
 export SSH_PUBKEY=""
-if [[ -n "${SSH_PUBKEY}" ]]; then
-    export ENABLE_SSH="1"
-else
-    export ENABLE_SSH="0"
-fi
 #export DEPLOY_DIR="/vagrant/tmp"
 set +x
 EOF
