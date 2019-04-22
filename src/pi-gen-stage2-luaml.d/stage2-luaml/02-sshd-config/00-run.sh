@@ -28,12 +28,6 @@ log "    INFO forced PasswordAuthentication to 'no'"
 log "    INFO forced ChallengeResponseAuthentication to 'no'"
 log "    INFO forced UsePAM to 'no'"
 
-# /boot/ssh[.txt] is a flag used by a Raspbian service unit to
-# automatically (force) ssh to start at boot
-touch "${ROOTFS_DIR}/boot/ssh.txt"
-log "    INFO set Raspbian /boot/ssh.txt flag to activate sshd by default"
-
-
 log "    # ------------------------------------------------------------ #"
 log "    # "
 log "    # SSH_PUBKEY"
