@@ -233,6 +233,7 @@ if [[ -n "${SSH_PUBKEY}" ]]; then
 else
     export ENABLE_SSH="0"
 fi
+#export DEPLOY_DIR="/vagrant/tmp"
 set +x
 EOF
 log "Created local config-luaml file"
