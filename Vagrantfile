@@ -20,6 +20,13 @@ Vagrant.configure("2") do |config|
     lv.machine_virtual_size = 40
   end
 
+  config.vm.provision :shell, inline: <<-SCRIPT
+  set -e
+  apt-get update
+  apt-get install -qq python-pip python3-pip
+  set +e
+  SCRIPT
+
   config.vm.provision :ansible_local do |ansible|
     ansible.install_mode = :pip
     ansible.compatibility_mode = "2.0"
