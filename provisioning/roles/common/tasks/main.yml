@@ -39,9 +39,11 @@
 
 - name: identify root filesystem's parent device path
   shell: >-
+    set -o pipefail;
     findmnt -enU -o SOURCE -t ext4 -M /  |
       xargs lsblk -no pkname
   register: identify_root_fs_parent_device
+  when: common_tasks_debian_packages_installed is success
 
 
 # ------------------------------------------------------------------- #
