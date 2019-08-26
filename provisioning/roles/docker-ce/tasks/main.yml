@@ -21,7 +21,7 @@
     name: docker
     state: started
     enabled: yes
-  register: result_docker_compose_running
+  register: result_docker_service_running
 
 - name: add specified users to group docker
   user:
