@@ -13,4 +13,4 @@
     dest: /home/vagrant/build/pi-gen/
   become_user: root
   become: yes
-  when: result_archive.stat.exists == True
+  when: result_archive.stat.exists
