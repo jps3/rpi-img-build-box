@@ -29,4 +29,3 @@
     groups: docker
   with_items: "{{ docker_group_users }}"
   when: result_install_docker_packages is success
-

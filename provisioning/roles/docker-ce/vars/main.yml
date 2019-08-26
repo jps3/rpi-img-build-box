@@ -22,4 +22,3 @@ docker_pkgname: "{{ 'docker-ce' ~ docker_version_stub }}"
 
 python_tools:
   - docker-compose
-
