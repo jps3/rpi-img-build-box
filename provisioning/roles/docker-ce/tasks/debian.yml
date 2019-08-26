@@ -20,12 +20,12 @@
   register: result_add_apt_key
 
 - name: add docker repo to apt configuration
-  apt_repository: 
+  apt_repository:
     repo: >
-      deb 
-      [arch="{{ repo_arch }}"] 
+      deb
+      [arch="{{ repo_arch }}"]
       "{{ repo_url }}"
-      "{{ ansible_distribution_release }}" 
+      "{{ ansible_distribution_release }}"
       stable
     update_cache: yes
   register: result_add_apt_repo

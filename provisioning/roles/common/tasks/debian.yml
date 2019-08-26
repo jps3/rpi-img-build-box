@@ -2,13 +2,13 @@
 # common / tasks / apt
 
 - name: update apt cache and upgrade as needed
-  apt: 
+  apt:
     update_cache: yes
     upgrade: yes
     cache_valid_time: "{{ (max_apt_cache_age_hours * 60 * 60) | int | abs }}"
 
 - name: install common packages
-  apt: 
+  apt:
     pkg: "{{ common_packages }}"
     state: present
-
+  register: common_tasks_debian_packages_installed
