@@ -23,6 +23,8 @@
 - name: build and run pi-gen apt-cacher-ng Docker container
   docker_compose:
     project_src: "/home/vagrant/build/pi-gen/"
+    build: yes
+    state: present
   when: result_docker_service_running is success
   # The above `when` does not appear to work as intended. If the
   # `docker-ce` playbook is not run, this still appears to attempt
