@@ -1,11 +1,11 @@
 ---
 # docker-ce / tasks / debian
 
-# 
+#
 # Docker-CE installations instructions reference page:
-# 
+#
 # https://docs.docker.com/install/linux/docker-ce/debian/#install-using-the-repository
-# 
+#
 
 - name: install packages required to support docker-ce
   apt:
