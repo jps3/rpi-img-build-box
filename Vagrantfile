@@ -14,7 +14,7 @@ Vagrant.configure("2") do |config|
   end
 
   config.vm.provider :libvirt do |lv, override|
-    override.vm.box = "debian/stretch64"
+    override.vm.box = "debian/buster64"
     lv.cpus = "4"
     lv.memory = "4096"
     lv.machine_virtual_size = 40
