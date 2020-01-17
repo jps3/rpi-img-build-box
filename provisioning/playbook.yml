@@ -1,6 +1,6 @@
 ---
 - hosts: all
-  become: yes
+  become: "yes"
   remote_user: vagrant
   become_method: sudo
   become_user: root
@@ -21,12 +21,12 @@
     docker_version: ""
     docker_group_users:
       - vagrant
-    pigen_commit: "HEAD"
+    pigen_commit: "2019-09-26-raspbian-buster"
 
   roles:
     - common
     - vagrant-user-env
     - docker-ce
-    - pi-gen
+    # - pi-gen
     - img-workspace
-    #- linux-kernel-crossbuild
+    # - linux-kernel-crossbuild
