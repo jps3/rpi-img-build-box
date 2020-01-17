@@ -39,10 +39,17 @@
 
 - name: identify root filesystem's parent device path
   shell: >-
-    findmnt -enU -o SOURCE -t ext4 -M /  |
-      xargs lsblk -no pkname
+    set -o pipefail
+    findmnt -enU -o SOURCE -t ext4 -M /
+    | xargs lsblk -no pkname
+    | awk 'length()>0 { print $1 }'
   register: identify_root_fs_parent_device
   when: common_tasks_debian_packages_installed is success
+
+- debug:
+    msg: >-
+      The root filesystem parent device
+      is '{{ identify_root_fs_parent_device.stdout_lines[0] }}'
 
 
 # ------------------------------------------------------------------- #
@@ -51,6 +58,11 @@
   set_fact:
     root_fs_parent_device_path: /dev/{{ identify_root_fs_parent_device.stdout_lines[0] }}
   when: identify_root_fs_parent_device.stdout_lines|length > 0
+
+- debug:
+    msg: >-
+      The path to root filesystem parent device 
+      is '{{ root_fs_parent_device_path }}'
 
 
 # ------------------------------------------------------------------- #
@@ -87,6 +99,13 @@
         partinfo is not skipped
         and
         partinfo is defined
+        and
+        (partinfo.partitions|length>0)
+
+- debug:
+    msg: >-
+      Disk size is '{{ partinfo.disk.size }}', and the
+      number of partitions is '{{ partinfo.partitions|length }}'
 
 
 # ------------------------------------------------------------------- #
@@ -117,6 +136,6 @@
   filesystem:
     fstype: ext4
     dev: "{{ root_fs_parent_device_path + partinfo.partitions[0].num|string }}"
-    resizefs: yes
+    resizefs: "yes"
   register: filesystem_grown
   when: resize_partition is not skipped
