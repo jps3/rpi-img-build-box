@@ -14,7 +14,7 @@ pi_gen_support_packages:
   - parted
   - qemu-user-static
   - quilt
-  - realpath
+  # - realpath
   - rsync
   - udev
   - xxd
