@@ -13,7 +13,7 @@
     # leave as an empty string ("") to install the
     # latest.
     #
-    # You can use the command apt-get madison docker-ce
+    # You can use the command apt-get madison docker.io
     # on a Debian-based system where the Docker apt
     # repos have already been configured to get the
     # correct version information string.
@@ -26,7 +26,7 @@
   roles:
     - common
     - vagrant-user-env
-    - docker-ce
+    - docker
     # - pi-gen
-    - img-workspace
+    # - img-workspace
     # - linux-kernel-crossbuild
