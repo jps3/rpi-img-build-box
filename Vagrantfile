@@ -22,6 +22,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.provision "shell", inline: <<-SCRIPT
   set -e
+  export DEBIAN_FRONTEND=noninteractive
   apt-get update
   apt-get install -qq python-pip python3-pip
   set +e
