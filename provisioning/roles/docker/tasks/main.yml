@@ -1,16 +1,12 @@
 ---
-# docker-ce / tasks / main
+# docker.io / tasks / main
 
-- name: run debian-specific tasks for installing docker-ce
+- name: run debian-specific tasks for installing docker.io
   include_tasks: debian.yml
   when: >
     ansible_distribution == 'Debian'
-      and
-    (
-      ansible_lsb.major_release | int == 8
-      or
-      ansible_lsb.major_release | int == 9
-    )
+    and
+    ansible_lsb.major_release | int >= 9
 
 - name: install python support modules for Docker
   pip:
@@ -30,4 +26,3 @@
     groups: docker
   with_items: "{{ docker_group_users }}"
   when: result_install_docker_packages is success
-

@@ -9,4 +9,3 @@
     - "~/build/img-workspace"
   become_user: vagrant
   become: yes
-

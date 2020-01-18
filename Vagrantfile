@@ -24,7 +24,7 @@ Vagrant.configure("2") do |config|
   set -e
   export DEBIAN_FRONTEND=noninteractive
   apt-get update
-  apt-get install -qq python3-pip
+  apt-get install -qq python-pip python3-pip
   set +e
   SCRIPT
 

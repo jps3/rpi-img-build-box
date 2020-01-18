@@ -227,7 +227,8 @@ export SALTSTACK_VERSION="2018.3"
 export SALT_MASTER=""
 export SALT_ENABLED=false
 export HOSTNAME_PREFIX=""
-export SSH_PUBKEYS=()
+export SSH_PUBKEY=""
+#export DEPLOY_DIR="/vagrant/tmp"
 set +x
 EOF
 log "Created local config-luaml file"

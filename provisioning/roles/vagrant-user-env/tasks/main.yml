@@ -22,7 +22,7 @@
   become_user: vagrant
   become: yes
   register: bash_it_installed
-  when: bash_it.stat.exists == False
+  when: not bash_it.stat.exists
 
 - name: create the ~vagrant/build dir
   file:

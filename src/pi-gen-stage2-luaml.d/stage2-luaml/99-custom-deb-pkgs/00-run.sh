@@ -5,7 +5,7 @@ for deb in files/*.deb; do
 	cp -vf $deb "${ROOTFS_DIR}/tmp/"
 	on_chroot << EOF
 		set -x
-		dpkg -i /tmp/$(basename "$deb")
+		dpkg -i /tmp/$(basename "${deb}")
 EOF
 done
 
@@ -19,7 +19,7 @@ systemctl enable set-distinct-hostname.service
 EOF
 
 
-log "     INFO -- HOSTNAME_PREFIX is \"${HOSTNAME_PREFIX}\""
+log "    INFO -- HOSTNAME_PREFIX is \"${HOSTNAME_PREFIX}\""
 if [[ -n "${HOSTNAME_PREFIX}" ]]; then
   set -x
   sed -i \

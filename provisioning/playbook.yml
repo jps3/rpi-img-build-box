@@ -1,6 +1,6 @@
 ---
 - hosts: all
-  become: yes
+  become: "yes"
   remote_user: vagrant
   become_method: sudo
   become_user: root
@@ -13,7 +13,7 @@
     # leave as an empty string ("") to install the
     # latest.
     #
-    # You can use the command apt-get madison docker-ce
+    # You can use the command apt-get madison docker.io
     # on a Debian-based system where the Docker apt
     # repos have already been configured to get the
     # correct version information string.
@@ -21,11 +21,12 @@
     docker_version: ""
     docker_group_users:
       - vagrant
+    pigen_commit: "2019-09-26-raspbian-buster"
 
   roles:
     - common
     - vagrant-user-env
-    - docker-ce
-    - pi-gen
-    - img-workspace
-    #- linux-kernel-crossbuild
+    - docker
+    # - pi-gen
+    # - img-workspace
+    # - linux-kernel-crossbuild

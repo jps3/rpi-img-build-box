@@ -4,3 +4,4 @@ if $SALT_ENABLED; then
     NOOBS_NAME="${NOOBS_NAME} salt_master_${SALT_MASTER%%.*}"
 fi
 
+log "    INFO - NOOBS_NAME is \"${NOOBS_NAME}\""

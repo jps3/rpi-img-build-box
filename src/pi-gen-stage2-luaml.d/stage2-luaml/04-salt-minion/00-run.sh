@@ -10,6 +10,8 @@ log "    # SALT_ENABLED       : '${SALT_ENABLED}'"
 log "    #"
 log "    # ------------------------------------------------------------ #"
 
+install -v -m 644 files/50-master.conf "${ROOTFS_DIR}/tmp/"
+
 on_chroot << EOF
 set -x
 source /etc/os-release
@@ -19,8 +21,16 @@ if ! (dpkg-query --show salt-minion); then
   echo "deb \${SALTSTACK_REPO_URL} stretch main" | tee /etc/apt/sources.list.d/saltstack.list
   apt-get update -y
   apt-get install -y salt-minion
+  mkdir -p /etc/salt/minion.d
+  if [[ -n "${SALT_MASTER}" ]]; then
+	  install -v -m 644 /tmp/50-master.conf /etc/salt/minion.d/
+	  sed -i -E \
+	    -e '/^#master:/s/^#//' \
+	    -e '/^master:/s/\bSALT_MASTER\b/'${SALT_MASTER}'/' \
+	    /etc/salt/minion.d/50-master.conf
+  fi
 else
-  log "    salt-minion already installed (skipping this step)"
+  echo "... salt-minion already installed (skipping this step) ..."
 fi
 set +x
 EOF

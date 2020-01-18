@@ -5,3 +5,5 @@ fi
 if $SALT_ENABLED; then
     export IMG_SUFFIX="${IMG_SUFFIX}-salt_enabled_${SALT_MASTER%%.wilbur*}"
 fi
+
+log "    INFO - IMG_SUFFIX is \"${IMG_SUFFIX}\""

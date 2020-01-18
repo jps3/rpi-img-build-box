@@ -1,17 +1,17 @@
 ---
-# docker-ce / tasks / debian
+# docker.io / tasks / debian
 
-# 
-# Docker-CE installations instructions reference page:
-# 
-# https://docs.docker.com/install/linux/docker-ce/debian/#install-using-the-repository
-# 
+#
+# docker.io installations instructions reference page:
+#
+# https://docs.docker.com/install/linux/docker.io/debian/#install-using-the-repository
+#
 
-- name: install packages required to support docker-ce
+- name: install packages required to support docker.io
   apt:
     pkg: "{{ support_packages }}"
     state: present
-  register: result_docker_ce_support_packages
+  register: result_docker_support_packages
 
 - name: add apt key for docker repo
   apt_key:
@@ -20,18 +20,18 @@
   register: result_add_apt_key
 
 - name: add docker repo to apt configuration
-  apt_repository: 
+  apt_repository:
     repo: >
-      deb 
-      [arch="{{ repo_arch }}"] 
+      deb
+      [arch="{{ repo_arch }}"]
       "{{ repo_url }}"
-      "{{ ansible_distribution_release }}" 
+      "{{ ansible_distribution_release }}"
       stable
     update_cache: yes
   register: result_add_apt_repo
   when: result_add_apt_key is success
 
-- name: install docker-ce package
+- name: install docker
   apt:
     pkg: "{{ docker_pkgname }}"
     state: present
