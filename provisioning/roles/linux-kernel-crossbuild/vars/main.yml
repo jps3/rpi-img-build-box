@@ -19,7 +19,7 @@ crossbuilding_packages:
   - libmpfr-dev 
   - libncurses5-dev 
   - lvm2
-  - python-pygments
+  - python3-pygments
   - qemu
   - qemu-user-static
   - quilt

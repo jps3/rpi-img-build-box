@@ -15,12 +15,13 @@
 - name: install python support modules for Docker
   pip:
     name: "{{ python_tools }}"
+    executable: pip3
 
 - name: ensure docker service is enabled and running
   service:
     name: docker
     state: started
-    enabled: yes
+    enabled: "yes"
   register: result_docker_service_running
 
 - name: add specified users to group docker

@@ -24,8 +24,8 @@ common_packages:
   - parted
   - pv
   - pwgen
-  - python
-  - python-passlib
+  - python3
+  - python3-passlib
   - qemu
   - qemu-user-static
   - rsync
