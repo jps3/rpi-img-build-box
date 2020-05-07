@@ -16,7 +16,17 @@ PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 shopt -u sourcepath
 
-SORETNIRPD3_URL="https://builds.3dprinteros.com/builds/stable/rpi/install/3DPrinterOS_Client_6.0.15stable.105_stable.zip"
+SORETNIRPD3_URL="https://builds.3dprinteros.com/builds/stable/rpi/install/3DPrinterOS_Client_6.2.3.165_stable.zip"
+
+SALTSTACK_BRANCH="stable"
+SALTSTACK_VERSION="2019.2"
+SALTSTACK_PY_VERSION="py3"
+
+SALT_MASTER=""
+SALT_ENABLED="false"
+
+HOSTNAME_PREFIX="testpi"
+SSH_PUBKEY=""
 
 
 # ---------------------------------------------------------------------- #
@@ -120,12 +130,13 @@ print_header "stage0/01-locale"
 #        installed.
 #
 
-target="stage0/01-locale/00-debconf"
-sed -i \
-    -e '/^[^#]/ s/en_GB/en_US/g' \
-    "${target}"
-log "Changed ${target} instances of en_GB to en_US"
+# target="stage0/01-locale/00-debconf"
+# sed -i \
+#     -e '/^[^#]/ s/en_GB/en_US/g' \
+#     "${target}"
+# log "Changed ${target} instances of en_GB to en_US"
 
+warn "SKIPPING -- not needed using current pi-gen"
 
 # ---------------------------------------------------------------------- #
 #  Set base pi-gen build script 'config' file env vars
@@ -133,13 +144,22 @@ log "Changed ${target} instances of en_GB to en_US"
 
 print_header "pi-gen config file"
 
+GIT_HEAD_SHORT_HASH="$(git rev-parse --short HEAD)"
+
 cat <<EOF >config
-IMG_NAME=""
+IMG_NAME="${GIT_HEAD_SHORT_HASH:-testpi}"
 APT_PROXY="http://172.17.0.1:3142"
+
+TARGET_HOSTNAME="testpi"
+KEYBOARD_KEYMAP="us"
+KEYBOARD_LAYOUT="English (US)"
+TIMEZONE_DEFAULT="America/New_York"
+
 FIRST_USER_NAME="luamluser"
 FIRST_USER_PASS="$(pwgen -1 32 1)"
 ENABLE_SSH="1"
 STAGE_LIST="stage0 stage1 stage2 stage2-luaml"
+
 EOF
 log "Added file 'config'"
 
@@ -150,13 +170,14 @@ log "Added file 'config'"
 
 print_header "stage1/01-sys-tweaks"
 
-target="stage1/01-sys-tweaks/00-run.sh"
-sed -E -i \
-    -e '/FIRST_USER_PASS.* chpasswd/ a passwd -l $FIRST_USER_NAME ' \
-    -e '/root:root.*chpasswd/ a passwd -l root' \
-    "${target}"
-log "Changed ${target} to disable first user"
+# target="stage1/01-sys-tweaks/00-run.sh"
+# sed -E -i \
+#     -e '/FIRST_USER_PASS.* chpasswd/ a passwd -l $FIRST_USER_NAME ' \
+#     -e '/root:root.*chpasswd/ a passwd -l root' \
+#     "${target}"
+# log "Changed ${target} to disable first user"
 
+warn "SKIPPING -- not needed using current pi-gen"
 
 # ---------------------------------------------------------------------- #
 #  stage2/01-sys-tweaks/
@@ -164,13 +185,15 @@ log "Changed ${target} to disable first user"
 
 print_header "stage2/01-sys-tweaks"
 
-target="stage2/01-sys-tweaks/00-debconf"
-sed -i \
-    -e '/^[^#]/ s/Generic 105-key (Intl) PC/Generic 104-key PC/' \
-    -e '/^[^#]/ s/select\([[:space:]]\)\{1,\}gb/select\1us/' \
-    -e '/^[^#]/ s/English (UK)/English (US)/' \
-    "${target}"
-log "Changed ${target} to change from GB to US keyboard"
+# target="stage2/01-sys-tweaks/00-debconf"
+# sed -i \
+#     -e '/^[^#]/ s/Generic 105-key (Intl) PC/Generic 104-key PC/' \
+#     -e '/^[^#]/ s/select\([[:space:]]\)\{1,\}gb/select\1us/' \
+#     -e '/^[^#]/ s/English (UK)/English (US)/' \
+#     "${target}"
+# log "Changed ${target} to change from GB to US keyboard"
+
+warn "SKIPPING -- not needed using current pi-gen"
 
 target="stage2/01-sys-tweaks/files/console-setup"
 sed -i \
@@ -213,21 +236,22 @@ log "Set SKIP_IMAGES flags for stages 2 to 5 where EXPORT_* flag exists"
 
 
 # ---------------------------------------------------------------------- #
-#  config-luaml
+#  config additions for 3DPrinterOS and LUAML
 # ---------------------------------------------------------------------- #
 
 print_header "config-luaml"
 
-cat <<EOF >config-luaml
+cat <<EOF >>config
 set -x
-export TIMEZONE="America/New_York"
+#export TIMEZONE="America/New_York" # defaults to TIMEZONE_DEFAULT
 export ROOT_PASSWORD_LENGTH="22"
-export SALTSTACK_BRANCH="stable"
-export SALTSTACK_VERSION="2018.3"
-export SALT_MASTER=""
-export SALT_ENABLED=false
-export HOSTNAME_PREFIX=""
-export SSH_PUBKEY=""
+export SALTSTACK_PY_VERSION="${SALTSTACK_PY_VERSION}"
+export SALTSTACK_BRANCH="${SALTSTACK_BRANCH}"
+export SALTSTACK_VERSION="${SALTSTACK_VERSION}"
+export SALT_MASTER="${SALT_MASTER}"
+export SALT_ENABLED="${SALT_ENABLED}"
+export HOSTNAME_PREFIX="${HOSTNAME_PREFIX}"
+export SSH_PUBKEY="${SSH_PUBKEY}"
 #export DEPLOY_DIR="/vagrant/tmp"
 set +x
 EOF
