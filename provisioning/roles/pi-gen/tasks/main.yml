@@ -12,9 +12,9 @@
     depth: 1
     dest: "~/build/pi-gen"
   become_user: vagrant
-  become: yes
+  become: "true"
   register: result_repo
-  ignore_errors: yes
+  ignore_errors: "true"
 
 - name: handle apt-cacher-ng archive if file exists
   include_tasks: apt-cacher-ng-archive.yml
@@ -30,18 +30,12 @@
   #   to play, but one would assume `result_docker_service_running`
   #   would **not** be success, no?
 
-## 
-## 17-Jan-2020: Temporarily commenting out this section to 
-##              disable while determining what changes to
-##              upstream pi-gen necessitate changes to our
-##              hacks here.
-##
-# - name: run prepare-pi-gen-for-stage2-luaml script
-#   shell: /vagrant/src/prepare-pi-gen-for-stage2-luaml.sh >/dev/null
-#   args:
-#     chdir: /home/vagrant/build/pi-gen/
-#     creates: stage2-luaml/prerun.sh
-#   become_user: vagrant
-#   become: yes
-#   register: stage2_luaml
-#   when: result_repo is success
+- name: run prepare-pi-gen-for-stage2-luaml script
+  shell: /vagrant/src/prepare-pi-gen-for-stage2-luaml.sh >/dev/null
+  args:
+    chdir: /home/vagrant/build/pi-gen/
+    creates: stage2-luaml/prerun.sh
+  become_user: vagrant
+  become: "true"
+  register: stage2_luaml
+  when: result_repo is success
