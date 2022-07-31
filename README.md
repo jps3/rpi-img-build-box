@@ -2,7 +2,7 @@
 
 ## Overview
 
-This repo is used to create a customized Raspbian Lite build using [pi-gen](https://github.com/RPi-distro/pi-gen), with some additions (ex. salt-minion) as both NOOBS and standard `*.img` file.
+This repo is used to create a customized Pi OS Lite build using [pi-gen](https://github.com/RPi-distro/pi-gen), with some additions (ex. salt-minion) as both NOOBS and standard `*.img` file.
 
 Vagrant will use a Debian box on either VirtualBox or libvirt, and provision using Ansible to prepare the VM with the packages and tools necessary to more easily use the pi-gen tools.
 

@@ -173,10 +173,10 @@ done
 
 print_header "Enabling sshd"
 if [[ -f /lib/systemd/system/sshswitch.service ]]; then
-	info "Using the Raspbian way"
+	info "Using the Pi OS way"
   set -x; touch /boot/ssh.txt; set +x
 else
-	warn "Likely not a Raspbian-based image, using alt method ... "
+	warn "Likely not a Pi OS-based image, using alt method ... "
 	set -x; update-rc.d ssh enable; set +x
 fi
 
