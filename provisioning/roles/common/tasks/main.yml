@@ -18,14 +18,14 @@
   ansible.builtin.replace:
     path: /etc/default/keyboard
     regexp: '^(XKBMODEL)="[^"]*"'
-    ansible.builtin.replace: '\1="pc104"'
+    replace: '\1="pc104"'
   notify: regenerate keyboard-configuration
 
 - name: ensure keyboard defaults file uses correct layout
   ansible.builtin.replace:
     path: /etc/default/keyboard
     regexp: '^(XKBLAYOUT)="[^"]*"'
-    ansible.builtin.replace: '\1="us"'
+    replace: '\1="us"'
   notify: regenerate keyboard-configuration
 
 
