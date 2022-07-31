@@ -3,5 +3,5 @@ apt-transport-https
 ca-certificates
 lsb-release
 rsync
-bsdtar
+libarchive-tools
 chrony
