@@ -3,12 +3,12 @@ quiet: true
 use_default_rules: true
 verbosity: 1
 
-#rulesdir:
-#  - ./rules/
+# rulesdir:
+#   - ./rules/
 
-#skiplist:
-#  - skip_this_tag
-#  - 401
+# skiplist:
+#   - skip_this_tag
+#   - 401
 
-#tags:
-#  - run_this_tag
+# tags:
+#   - run_this_tag

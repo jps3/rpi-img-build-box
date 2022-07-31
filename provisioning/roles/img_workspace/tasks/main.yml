@@ -1,0 +1,12 @@
+---
+# img_workspace/tasks/main.yml
+
+- name: create img_workspace build directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  with_items:
+    - "~/build/img_workspace"
+  become_user: vagrant
+  become: true

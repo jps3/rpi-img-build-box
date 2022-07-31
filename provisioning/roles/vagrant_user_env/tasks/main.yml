@@ -2,37 +2,38 @@
 # vagrant-user-env / tasks / main
 
 - name: check for existence of ~vagrant/.bash_it
-  stat: path=/home/vagrant/.bash_it
+  ansible.builtin.stat: path=/home/vagrant/.bash_it
   register: bash_it
 
 - name: clone bash_it Github repo to ~vagrant/
-  git:
+  ansible.builtin.git:
     repo: "{{ bash_it_repo }}"
     version: "master"
     depth: 1
     dest: "~/.bash_it"
   become_user: vagrant
-  become: yes
-  ignore_errors: yes
+  become: true
+  ignore_errors: true
 
 # TODO: This should only run if not run before.
 #       (do not yet know how to implement this check)
 - name: run the bash_it install script
-  command: "~/.bash_it/install.sh --silent"
+  ansible.builtin.command: "~/.bash_it/install.sh --silent"
   become_user: vagrant
-  become: yes
+  become: true
   register: bash_it_installed
   when: not bash_it.stat.exists
 
 - name: create the ~vagrant/build dir
-  file:
+  ansible.builtin.file:
     path: "~/build"
     state: directory
+    mode: 0755
   become_user: vagrant
-  become: yes
+  become: true
 
 - name: ensure that direnv started in ~vagrant/.bashrc
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /home/vagrant/.bashrc
     regexp: '^.*direnv hook bash.*$'
     line: 'eval "$(direnv hook bash)"'

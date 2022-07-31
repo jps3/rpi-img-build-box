@@ -6,7 +6,7 @@
   when: ansible_distribution == 'Debian'
 
 - name: clone pi-gen Github repo
-  git:
+  ansible.builtin.git:
     repo: "{{ pi_gen_repo }}"
     version: "{{ pigen_commit | default('HEAD') }}"
     depth: 1
@@ -31,7 +31,8 @@
   #   would **not** be success, no?
 
 - name: run prepare-pi-gen-for-stage2-luaml script
-  shell: /vagrant/src/prepare-pi-gen-for-stage2-luaml.sh >/dev/null
+  ansible.builtin.shell: \
+    /vagrant/src/prepare-pi-gen-for-stage2-luaml.sh >/dev/null
   args:
     chdir: /home/vagrant/build/pi-gen/
     creates: stage2-luaml/prerun.sh

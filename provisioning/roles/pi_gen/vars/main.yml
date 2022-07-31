@@ -2,7 +2,7 @@
 # pi-gen / vars
 
 pi_gen_support_packages:
-  - bsdtar
+  - libarchive-tools
   - coreutils
   - curl
   - debootstrap
@@ -14,7 +14,6 @@ pi_gen_support_packages:
   - parted
   - qemu-user-static
   - quilt
-  # - realpath
   - rsync
   - udev
   - xxd

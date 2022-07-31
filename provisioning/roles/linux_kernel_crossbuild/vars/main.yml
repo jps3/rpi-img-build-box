@@ -1,6 +1,6 @@
 ---
 crossbuilding_packages:
-  - bc 
+  - bc
   - binfmt-support
   - build-essential
   - crossbuild-essential-arm64
@@ -12,12 +12,12 @@ crossbuilding_packages:
   - dosfstools
   - fakeroot
   - git-core
-  - jq 
+  - jq
   - kpartx
-  - libgmp-dev 
-  - libisl-dev 
-  - libmpfr-dev 
-  - libncurses5-dev 
+  - libgmp-dev
+  - libisl-dev
+  - libmpfr-dev
+  - libncurses5-dev
   - lvm2
   - python3-pygments
   - qemu

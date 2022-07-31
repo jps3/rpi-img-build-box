@@ -15,127 +15,129 @@
     state: present
 
 - name: ensure keyboard defaults file uses correct model
-  replace:
+  ansible.builtin.replace:
     path: /etc/default/keyboard
     regexp: '^(XKBMODEL)="[^"]*"'
-    replace: '\1="pc104"'
+    ansible.builtin.replace: '\1="pc104"'
   notify: regenerate keyboard-configuration
 
 - name: ensure keyboard defaults file uses correct layout
-  replace:
+  ansible.builtin.replace:
     path: /etc/default/keyboard
     regexp: '^(XKBLAYOUT)="[^"]*"'
-    replace: '\1="us"'
+    ansible.builtin.replace: '\1="us"'
   notify: regenerate keyboard-configuration
 
 
-# ------------------------------------------------------------------- #
+# # ------------------------------------------------------------------- #
+# #
+# #  The following is a fix for the default libvirt Vagrant box
+# #  from debian/ which does not provide an automagically-resizing
+# #  root filesystem partition.
+# #
+# # ------------------------------------------------------------------- #
 #
-#  The following is a fix for the default libvirt Vagrant box
-#  from debian/ which does not provide an automagically-resizing
-#  root filesystem partition.
+# - name: identify root filesystem's parent device path
+#   ansible.builtin.shell: >-
+#     set -o pipefail
+#     findmnt -enU -o SOURCE -t ext4 -M /
+#     | xargs lsblk -no pkname
+#     | awk 'length()>0 { print $1 }'
+#   register: identify_root_fs_parent_device
+#   when: common_tasks_debian_packages_installed is success
 #
-# ------------------------------------------------------------------- #
-
-- name: identify root filesystem's parent device path
-  shell: >-
-    set -o pipefail
-    findmnt -enU -o SOURCE -t ext4 -M /
-    | xargs lsblk -no pkname
-    | awk 'length()>0 { print $1 }'
-  register: identify_root_fs_parent_device
-  when: common_tasks_debian_packages_installed is success
-
-- debug:
-    msg: >-
-      The root filesystem parent device
-      is '{{ identify_root_fs_parent_device.stdout_lines[0] }}'
-
-
-# ------------------------------------------------------------------- #
-
-- name: set fact root_fs_parent_device_path
-  set_fact:
-    root_fs_parent_device_path: /dev/{{ identify_root_fs_parent_device.stdout_lines[0] }}
-  when: identify_root_fs_parent_device.stdout_lines|length > 0
-
-- debug:
-    msg: >-
-      The path to root filesystem parent device 
-      is '{{ root_fs_parent_device_path }}'
-
-
-# ------------------------------------------------------------------- #
-
-- name: get stat information for parent device of root fs device
-  stat:
-    path: "{{ root_fs_parent_device_path }}"
-  register: root_fs_parent_device
-  when: root_fs_parent_device_path is defined
-
-
-# ------------------------------------------------------------------- #
-
-# https://github.com/ansible/ansible/issues/23914
-- name: get parted information for parent device of root fs device
-  parted:
-    device: "{{ root_fs_parent_device_path }}"
-    number: 1
-  register: partinfo
-  when: root_fs_parent_device is defined
-        and
-        root_fs_parent_device is not skipped
-        and
-        root_fs_parent_device.stat.exists
-
-
-# ------------------------------------------------------------------- #
-
-- name: set gap_kb fact
-  set_fact:
-    gap_kb: "{{ partinfo.disk.size - partinfo.partitions[0].end }}"
-  when: root_fs_parent_device is defined
-        and
-        partinfo is not skipped
-        and
-        partinfo is defined
-        and
-        (partinfo.partitions|length>0)
-
-- debug:
-    msg: >-
-      Disk size is '{{ partinfo.disk.size }}', and the
-      number of partitions is '{{ partinfo.partitions|length }}'
-
-
-# ------------------------------------------------------------------- #
-
-- name: resize partition to fill maximum space
-  command: >-
-    parted
-      ---pretend-input-tty
-      {{ root_fs_parent_device_path }}
-      resizepart 1
-      Yes
-      100%
-  register: resize_partition
-  when: gap_kb is defined and gap_kb|int > 1024
-
-
-# ------------------------------------------------------------------- #
-
-- name: re-read parition table
-  command: partprobe {{ root_fs_parent_device_path }}
-  register: reread_partition_table
-  when: resize_partition is not skipped
-
-
-# ------------------------------------------------------------------- #
-
-- name: grow root filesystem to fill maximum block size
-  filesystem:
-    fstype: ext4
-    dev: "{{ root_fs_parent_device_path + partinfo.partitions[0].num|string }}"
-    resizefs: "yes"
-  register: filesystem_grown
-  when: resize_partition is not skipped
+# - debug:
+#     msg: >-
+#       The root filesystem parent device
+#       is '{{ identify_root_fs_parent_device.stdout_lines[0] }}'
+#
+#
+# # ------------------------------------------------------------------- #
+#
+# - name: set fact root_fs_parent_device_path
+#   ansible.builtin.set_fact:
+#     root_fs_parent_device_path: \
+#       /dev/{{ identify_root_fs_parent_device.stdout_lines[0] }}
+#   when: identify_root_fs_parent_device.stdout_lines|length > 0
+#
+# - debug:
+#     msg: >-
+#       The path to root filesystem parent device
+#       is '{{ root_fs_parent_device_path }}'
+#
+#
+# # ------------------------------------------------------------------- #
+#
+# - name: get stat information for parent device of root fs device
+#   ansible.builtin.stat:
+#     path: "{{ root_fs_parent_device_path }}"
+#   register: root_fs_parent_device
+#   when: root_fs_parent_device_path is defined
+#
+#
+# # ------------------------------------------------------------------- #
+#
+# # https://github.com/ansible/ansible/issues/23914
+# - name: get parted information for parent device of root fs device
+#   parted:
+#     device: "{{ root_fs_parent_device_path }}"
+#     number: 1
+#   register: partinfo
+#   when: root_fs_parent_device is defined
+#         and
+#         root_fs_parent_device is not skipped
+#         and
+#         root_fs_parent_device.stat.exists
+#
+#
+# # ------------------------------------------------------------------- #
+#
+# - name: set gap_kb fact
+#   ansible.builtin.set_fact:
+#     gap_kb: "{{ partinfo.disk.size - partinfo.partitions[0].end }}"
+#   when: root_fs_parent_device is defined
+#         and
+#         partinfo is not skipped
+#         and
+#         partinfo is defined
+#         and
+#         (partinfo.partitions|length>0)
+#
+# - debug:
+#     msg: >-
+#       Disk size is '{{ partinfo.disk.size }}', and the
+#       number of partitions is '{{ partinfo.partitions|length }}'
+#
+#
+# # ------------------------------------------------------------------- #
+#
+# - name: resize partition to fill maximum space
+#   ansible.builtin.command: >-
+#     parted
+#       ---pretend-input-tty
+#       {{ root_fs_parent_device_path }}
+#       resizepart 1
+#       Yes
+#       100%
+#   register: resize_partition
+#   when: gap_kb is defined and gap_kb|int > 1024
+#
+#
+# # ------------------------------------------------------------------- #
+#
+# - name: re-read parition table
+#   ansible.builtin.command: partprobe {{ root_fs_parent_device_path }}
+#   register: reread_partition_table
+#   when: resize_partition is not skipped
+#
+#
+# # ------------------------------------------------------------------- #
+#
+# - name: grow root filesystem to fill maximum block size
+#   filesystem:
+#     fstype: ext4
+#     dev: \
+#       "{{ root_fs_parent_device_path + partinfo.partitions[0].num|string }}"
+#     resizefs: "yes"
+#   register: filesystem_grown
+#   when: resize_partition is not skipped#

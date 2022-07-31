@@ -1,11 +1,12 @@
 ---
 - hosts: all
-  become: "yes"
+  become: true
   remote_user: vagrant
   become_method: sudo
   become_user: root
 
   vars:
+    # kernel_arch only used for linux-kernel-crossbuild role
     kernel_arch: "armhf"
     #
     # docker_version can be used to specify a specific
@@ -21,12 +22,12 @@
     docker_version: ""
     docker_group_users:
       - vagrant
-    pigen_commit: "2020-02-13-raspbian-buster"
+    pigen_commit: "2022-04-04-raspios-bullseye"
 
   roles:
     - common
-    - vagrant-user-env
+    - vagrant_user_env
     - docker
-    - pi-gen
-    # - img-workspace
+    - pi_gen
+    # - img_workspace
     # - linux-kernel-crossbuild

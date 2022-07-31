@@ -2,6 +2,6 @@
 # pi-gen / tasks / apt
 
 - name: install common debian packages
-  apt:
+  ansible.builtin.apt:
     pkg: "{{ pi_gen_support_packages }}"
     state: present

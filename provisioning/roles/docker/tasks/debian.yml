@@ -8,31 +8,31 @@
 #
 
 - name: install packages required to support docker.io
-  apt:
+  ansible.builtin.apt:
     pkg: "{{ support_packages }}"
     state: present
   register: result_docker_support_packages
 
 - name: add apt key for docker repo
-  apt_key:
+  ansible.builtin.apt_key:
     id: "{{ repo_key. id }}"
     url: "{{ repo_key.url }}"
   register: result_add_apt_key
 
 - name: add docker repo to apt configuration
-  apt_repository:
+  ansible.builtin.apt_repository:
     repo: >
       deb
       [arch="{{ repo_arch }}"]
       "{{ repo_url }}"
       "{{ ansible_distribution_release }}"
       stable
-    update_cache: yes
+    update_cache: true
   register: result_add_apt_repo
   when: result_add_apt_key is success
 
 - name: install docker
-  apt:
+  ansible.builtin.apt:
     pkg: "{{ docker_pkgname }}"
     state: present
   register: result_install_docker_packages

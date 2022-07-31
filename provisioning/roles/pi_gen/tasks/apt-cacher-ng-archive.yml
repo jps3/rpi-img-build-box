@@ -2,15 +2,15 @@
 # pi-gen / tasks / apt-cacher-ng-archive
 
 - name: check for existence of apt-cacher-ng tar file
-  stat:
+  ansible.builtin.stat:
     path: /vagrant/apt-cacher-ng.tar
   register: result_archive
   when: result_repo is success
 
 - name: expand apt-cacher-ng tar file
-  unarchive:
+  ansible.builtin.unarchive:
     src: /vagrant/apt-cacher-ng.tar
     dest: /home/vagrant/build/pi-gen/
   become_user: root
-  become: yes
+  become: true
   when: result_archive.stat.exists
