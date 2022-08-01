@@ -1,7 +1,8 @@
 parseable: true
 quiet: true
-use_default_rules: true
 verbosity: 1
+
+use_default_rules: true
 
 # rulesdir:
 #   - ./rules/
