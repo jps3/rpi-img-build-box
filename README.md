@@ -4,7 +4,7 @@
 
 This repo is used to create a customized Pi OS Lite build using [pi-gen](https://github.com/RPi-distro/pi-gen), with some additions (ex. salt-minion) as both NOOBS and standard `*.img` file.
 
-Vagrant will use a Debian box on either VirtualBox or libvirt, and provision using Ansible to prepare the VM with the packages and tools necessary to more easily use the pi-gen tools.
+Vagrant will use a Debian box on either VMware Fusion/Workstation or Linux’s libvirt, and provision using Ansible to prepare the VM with the packages and tools necessary to more easily use the pi-gen tools.
 
 **NOTE:** The default provisioning and pi-gen customization is aimed toward building a 3DPrinterOS client.
 
@@ -19,16 +19,23 @@ Vagrant will use a Debian box on either VirtualBox or libvirt, and provision usi
 
 ## Requirements
 
-- [Virtualbox](https://www.virtualbox.org/) ([download](https://www.virtualbox.org/wiki/Downloads)) _or_[libvirt](https://libvirt.org/docs.html) _(tested on Ubuntu 18.04 host)_
+- VMware
+  - [VMware Fusion](https://www.vmware.com/ca/products/fusion.html)
+  - [VMware Workstation Pro](https://www.vmware.com/ca/products/workstation-pro.html)
+  - Vagrant vmware Utility
+    - [download](https://www.vagrantup.com/vmware/downloads)
+    - [install](https://www.vagrantup.com/docs/providers/vmware/installation)
+  - _(Considering supporting ESXi and/or vSphere)_
+- [libvirt](https://libvirt.org/docs.html) _(tested on Ubuntu 18.04 host)_
 - [Vagrant](https://www.vagrantup.com/docs/) ([download](https://www.vagrantup.com/downloads.html))
 
 ## Steps
 
-1. Set up VirtualBox or libvirt (whichever you prefer)
+1. Set your hypervisor of choice (VMware or libvirt)
 1. Install Vagrant
 1. `vagrant up`
 1. `vagrant ssh`
 1. `cd build/pi-gen`
 1. Edit `config` file as needed.
 1. Edit `config-luaml` as desired.
-1. `./build-docker.sh -c config-luaml`
+1. `./build-docker.sh`

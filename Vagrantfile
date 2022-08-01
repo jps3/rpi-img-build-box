@@ -2,18 +2,18 @@
 # vi: set ft=ruby :
 
 Vagrant.configure("2") do |config|
-  config.vm.box = "bento/debian-10.2"
+  config.vm.box = "bento/debian-11"
 
-  config.vm.provider "virtualbox" do |vb|
-    vb.default_nic_type = "virtio"
-    vb.linked_clone = true
-    vb.cpus = "4"
-    vb.memory = "4096"
-    vb.customize ["modifyvm", :id, "--ioapic", "on"]
-    vb.customize ["modifyvm", :id, "--audio", "none"]
+  config.vm.provider :vmware_desktop do |vmwd, override|
+    vmwd.gui             = true
+    vmwd.linked_clone    = true
+    vmwd.vmx["memsize"]  = "4096"
+    vmwd.vmx["numvcpus"] = "4"
+    override.vm.synced_folder ".", "/vagrant"
+    override.vagrant.plugins = ["vagrant-vmware-desktop"]
   end
 
-  config.vm.provider "libvirt" do |lv, override|
+  config.vm.provider :libvirt do |lv, override|
     override.vm.box = "debian/buster64"
     lv.cpus = "4"
     lv.memory = "4096"
