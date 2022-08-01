@@ -30,7 +30,7 @@ log "    INFO forced UsePAM to 'no'"
 
 log "    # ------------------------------------------------------------ #"
 log "    # "
-log "    # SSH_PUBKEY"
+log "    # PUBKEY_SSH_ROOT"
 log "    # "
 log "    # ------------------------------------------------------------ #"
 
@@ -39,7 +39,7 @@ install -v -m 600 files/authorized_keys "${ROOTFS_DIR}/root/.ssh/"
 
 tmpfile=$(mktemp -t ssh_pubkey_XXXXXX)
 
-if [[ -z "${SSH_PUBKEY}" ]]; then
+if [[ -z "${PUBKEY_SSH_ROOT}" ]]; then
 	log "    "
 	log "    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! #"
 	log "    # "
@@ -51,12 +51,12 @@ if [[ -z "${SSH_PUBKEY}" ]]; then
 	log "    ... sleeping for 120 sec ... ^C to kill/quit build ..."
 	sleep 120
 else
-	echo "${SSH_PUBKEY}" | tee $tmpfile
+	echo "${PUBKEY_SSH_ROOT}" | tee $tmpfile
 	if (ssh-keygen -l -f $tmpfile); then
 		cat $tmpfile >> "${ROOTFS_DIR}/root/.ssh/authorized_keys"
-		log "    INFO added SSH_PUBKEY to target /root/.ssh/authorized_keys"
+		log "    INFO added PUBKEY_SSH_ROOT to target /root/.ssh/authorized_keys"
 	else
-		log "    ERROR -- ssh-keygen returned an error verifying SSH_PUBKEY"
+		log "    ERROR -- ssh-keygen returned an error verifying PUBKEY_SSH_ROOT"
 		exit -1
 	fi
 fi

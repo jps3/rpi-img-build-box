@@ -26,7 +26,7 @@ SALT_MASTER=""
 SALT_ENABLED="false"
 
 HOSTNAME_PREFIX="testpi"
-SSH_PUBKEY=""
+PUBKEY_SSH_ROOT=""
 
 
 # ---------------------------------------------------------------------- #
@@ -157,6 +157,8 @@ TIMEZONE_DEFAULT="America/New_York"
 
 FIRST_USER_NAME="luamluser"
 FIRST_USER_PASS="$(pwgen -1 32 1)"
+PUBKEY_SSH_FIRST_USER=""
+PUBKEY_ONLY_SSH="0"
 ENABLE_SSH="1"
 STAGE_LIST="stage0 stage1 stage2 stage2-luaml"
 
@@ -251,11 +253,11 @@ export SALTSTACK_VERSION="${SALTSTACK_VERSION}"
 export SALT_MASTER="${SALT_MASTER}"
 export SALT_ENABLED="${SALT_ENABLED}"
 export HOSTNAME_PREFIX="${HOSTNAME_PREFIX}"
-export SSH_PUBKEY="${SSH_PUBKEY}"
+export PUBKEY_SSH_ROOT="${PUBKEY_SSH_ROOT}"
 #export DEPLOY_DIR="/vagrant/tmp"
 set +x
 EOF
-log "Created local config-luaml file"
+log "Created local config file"
 
 
 # ---------------------------------------------------------------------- #
