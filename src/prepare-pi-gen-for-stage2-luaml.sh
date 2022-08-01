@@ -238,10 +238,10 @@ log "Set SKIP_IMAGES flags for stages 2 to 5 where EXPORT_* flag exists"
 
 
 # ---------------------------------------------------------------------- #
-#  config additions for 3DPrinterOS and LUAML
+#  config + additions for 3DPrinterOS and LUAML support
 # ---------------------------------------------------------------------- #
 
-print_header "config-luaml"
+print_header "config"
 
 cat <<EOF >>config
 set -x
