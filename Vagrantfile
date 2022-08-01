@@ -24,16 +24,18 @@ Vagrant.configure("2") do |config|
   set -e
   export DEBIAN_FRONTEND=noninteractive
   apt-get update
-  apt-get install -qq python-pip python3-pip
+  apt-get install -qq python3-pip
   set +e
   SCRIPT
 
   config.vm.provision "ansible_local" do |ansible|
-    ansible.install_mode = "pip"
-    ansible.compatibility_mode = "2.0"
     ansible.playbook = "provisioning/playbook.yml"
     ansible.extra_vars = {
       ansible_python_interpreter: "/usr/bin/python3"
     }
   end
+
+  # TODO: needrestart or checkrestart to handle services
+  # TODO: report or reboot when new kernel available
+
 end
