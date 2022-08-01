@@ -12,9 +12,9 @@
     depth: 1
     dest: "~/build/pi-gen"
   become_user: vagrant
-  become: "true"
+  become: true
   register: result_repo
-  ignore_errors: "true"
+  ignore_errors: true
 
 - name: handle apt-cacher-ng archive if file exists
   include_tasks: apt-cacher-ng-archive.yml
@@ -37,6 +37,6 @@
     chdir: /home/vagrant/build/pi-gen/
     creates: stage2-luaml/prerun.sh
   become_user: vagrant
-  become: "true"
+  become: true
   register: stage2_luaml
   when: result_repo is success

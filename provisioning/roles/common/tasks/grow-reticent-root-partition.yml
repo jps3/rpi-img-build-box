@@ -111,7 +111,8 @@
 - name: grow root filesystem to fill maximum block size
   filesystem:
     fstype: ext4
-    dev: "{{ root_fs_parent_device_path + partinfo.partitions[0].num | string }}"
+    dev: \
+      "{{ root_fs_parent_device_path + partinfo.partitions[0].num | string }}"
     resizefs: "yes"
   register: filesystem_grown
   when: resize_partition is not skipped

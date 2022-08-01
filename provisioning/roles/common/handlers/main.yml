@@ -1,5 +1,6 @@
 ---
 
 - name: regenerate keyboard-configuration
-  ansible.builtin.command: "/usr/sbin/dpkg-reconfigure -f noninteractive keyboard-configuration"
+  ansible.builtin.command: \
+    "/usr/sbin/dpkg-reconfigure -f noninteractive keyboard-configuration"
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
