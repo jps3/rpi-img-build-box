@@ -16,10 +16,10 @@ PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 shopt -u sourcepath
 
-SORETNIRPD3_URL="https://builds.3dprinteros.com/builds/stable/rpi/install/3DPrinterOS_Client_6.2.3.165_stable.zip"
+SORETNIRPD3_URL="https://client3dprinteros.blob.core.windows.net/releases/updates/rpi/stable3/full_update/3dprinteros_client_update.zip"
 
 SALTSTACK_BRANCH="stable"
-SALTSTACK_VERSION="2019.2"
+SALTSTACK_VERSION="3004"
 SALTSTACK_PY_VERSION="py3"
 
 SALT_MASTER=""
