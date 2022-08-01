@@ -1,13 +1,11 @@
 ---
-# docker.io / vars / main
+# docker / vars / main
 
 support_packages:
-  - apt-transport-https
   - ca-certificates
   - curl
-  - gnupg2
-  - software-properties-common
-  - python3-docker
+  - gnupg
+  - lsb-release
 
 repo_key:
   id: "8D81803C0EBFCD88"
@@ -20,7 +18,8 @@ repo_url: "https://download.docker.com/linux/debian"
 docker_version_stub:
   "{{ (docker_version == '') | ternary('', '=' ~ docker_version) }}"
 
-docker_pkgname: "{{ 'docker.io' ~ docker_version_stub }}"
+docker_pkgname: "{{ docker_package_name ~ docker_version_stub }}"
 
 python_tools:
+  - docker
   - docker-compose

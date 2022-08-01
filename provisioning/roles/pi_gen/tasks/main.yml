@@ -21,7 +21,7 @@
   when: result_repo is success
 
 - name: build and run pi-gen apt-cacher-ng Docker container
-  docker_compose:
+  community.docker.docker_compose:
     project_src: "/home/vagrant/build/pi-gen/"
   when: result_docker_service_running is success
   # TODO:

@@ -1,25 +1,24 @@
 ---
-# docker.io / tasks / debian
+# docker / tasks / debian
 
 #
-# docker.io installations instructions reference page:
-#
-# https://docs.docker.com/install/linux/docker.io/debian/#install-using-the-repository
+# Docker installations instructions reference page:
+#   https://docs.docker.com/engine/install/debian/
 #
 
-- name: install packages required to support docker.io
+- name: install packages required to support docker-ce
   ansible.builtin.apt:
     pkg: "{{ support_packages }}"
     state: present
   register: result_docker_support_packages
 
-- name: add apt key for docker repo
+- name: add apt key for docker-ce repo
   ansible.builtin.apt_key:
     id: "{{ repo_key. id }}"
     url: "{{ repo_key.url }}"
   register: result_add_apt_key
 
-- name: add docker repo to apt configuration
+- name: add docker-ce repo to apt configuration
   ansible.builtin.apt_repository:
     repo: >
       deb
@@ -31,9 +30,16 @@
   register: result_add_apt_repo
   when: result_add_apt_key is success
 
-- name: install docker
+- name: install docker-ce
   ansible.builtin.apt:
     pkg: "{{ docker_pkgname }}"
     state: present
   register: result_install_docker_packages
   when: result_add_apt_repo is success
+
+- name: install docker-compose-plugin
+  ansible.builtin.apt:
+    pkg: 'docker-compose-plugin'
+    state: present
+  register: result_install_docker_compose_plugin_package
+  when: result_install_docker_packages is success

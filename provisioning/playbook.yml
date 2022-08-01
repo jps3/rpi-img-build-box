@@ -8,17 +8,27 @@
   vars:
     # kernel_arch only used for linux-kernel-crossbuild role
     kernel_arch: "armhf"
+    # major version number of debian release
+    debian_major_release: 11
     #
     # docker_version can be used to specify a specific
     # version such as '18.06.0~ce~3-0~ubuntu', otherwise
     # leave as an empty string ("") to install the
     # latest.
     #
-    # You can use the command apt-get madison docker.io
+    # You can use the command apt-get madison docker-ce
     # on a Debian-based system where the Docker apt
     # repos have already been configured to get the
     # correct version information string.
     #
+    # TODO: Decide on which distribution of Docker to
+    #       install and use. Package named 'docker.io'
+    #       is from Debian maintainers, whereas
+    #       'docker-ce' is from the Docker apt repo.
+    #       Currently, the 'docker.io' package is
+    #       being installed in our VM.
+    #
+    docker_package_name: "docker-ce"
     docker_version: ""
     docker_group_users:
       - vagrant
