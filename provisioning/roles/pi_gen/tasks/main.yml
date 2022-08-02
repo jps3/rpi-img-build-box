@@ -40,3 +40,11 @@
   become: true
   register: stage2_luaml
   when: result_repo is success
+
+- name: remind user to create or delete stage file flags
+  ansible.builtin.debug:
+    msg: >
+      REMINDER - Check stageX/{SKIP_IMAGES,EXPORT_IMAGE,EXPORT_NOOBS}
+      file flags as needed to ensure not building any stages
+      unnecessarily, and that desired stages are created and exported.
+  when: stage2_luaml is success
