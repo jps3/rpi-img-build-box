@@ -37,26 +37,25 @@ log "    # ------------------------------------------------------------ #"
 install -v -m 755 -d                    "${ROOTFS_DIR}/root/.ssh"
 install -v -m 600 files/authorized_keys "${ROOTFS_DIR}/root/.ssh/"
 
-tmpfile=$(mktemp -t ssh_pubkey_XXXXXX)
-
-if [[ -z "${PUBKEY_SSH_ROOT}" ]]; then
-	log "    "
-	log "    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! #"
-	log "    # "
-	log "    #       W A R N I N G"
-	log "    #       YOU DO NOT HAVE ANY INITIAL SSH PUBKEYS DEFINED"
-	log "    # "
-	log "    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! #"
-	log "    "
-	log "    ... sleeping for 120 sec ... ^C to kill/quit build ..."
-	sleep 120
+if [[ -z "${PUBKEY_SSH_ROOT}/root" ]]; then
+    log "    "
+    log "    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! #"
+    log "    # "
+    log "    #       W A R N I N G"
+    log "    #       YOU DO NOT HAVE ANY INITIAL SSH PUBKEYS DEFINED"
+    log "    # "
+    log "    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! #"
+    log "    "
+    log "    ... sleeping for 120 sec ... ^C to kill/quit build ..."
+    sleep 120
 else
-	echo "${PUBKEY_SSH_ROOT}" | tee $tmpfile
-	if (ssh-keygen -l -f $tmpfile); then
-		cat $tmpfile >> "${ROOTFS_DIR}/root/.ssh/authorized_keys"
-		log "    INFO added PUBKEY_SSH_ROOT to target /root/.ssh/authorized_keys"
-	else
-		log "    ERROR -- ssh-keygen returned an error verifying PUBKEY_SSH_ROOT"
-		exit -1
-	fi
+    tmpfile="$(mktemp -t ssh_pubkey_XXXXXX)"
+    echo "${PUBKEY_SSH_ROOT}" | tee $tmpfile
+    if (/usr/bin/ssh-keygen -l -f "$tmpfile"); then
+        cat $tmpfile >> "${ROOTFS_DIR}/root/.ssh/authorized_keys"
+        log "    INFO added PUBKEY_SSH_ROOT to target /root/.ssh/authorized_keys"
+    else
+        log "    ERROR -- ssh-keygen returned an error verifying PUBKEY_SSH_ROOT"
+        exit -1
+    fi
 fi

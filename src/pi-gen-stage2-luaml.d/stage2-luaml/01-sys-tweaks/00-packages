@@ -5,3 +5,4 @@ lsb-release
 rsync
 libarchive-tools
 chrony
+openssh-client
