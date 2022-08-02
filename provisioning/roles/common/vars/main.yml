@@ -10,6 +10,7 @@ max_apt_cache_age_hours: 2
 common_packages:
   - ack
   - apt-transport-https
+  - bc
   - binutils
   - debian-goodies
   - direnv
@@ -28,6 +29,7 @@ common_packages:
   - python3-passlib
   - qemu
   - qemu-user-static
+  - qemu-utils
   - rsync
   - systemd-container
   - unzip
