@@ -16,7 +16,8 @@ PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 shopt -u sourcepath
 
-SORETNIRPD3_URL="https://client3dprinteros.blob.core.windows.net/releases/updates/rpi/stable3/full_update/3dprinteros_client_update.zip"
+SORETNIRPD3_ZIP="3dprinteros_client_update.zip"
+SORETNIRPD3_URL="https://client3dprinteros.blob.core.windows.net/releases/updates/rpi/stable3/full_update/${SORETNIRPD3_ZIP}"
 
 SALTSTACK_BRANCH="stable"
 SALTSTACK_VERSION="3004"
