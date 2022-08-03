@@ -14,7 +14,8 @@ done
 #
 log "    INFO -- Enabling set-distinct-hostname.service on target ..."
 on_chroot << EOF
-if [[ "$(dpkg-query -Wf '${db:Status-Status}' set-distinct-hostname)" == "installed" ]]; then
+PKG_QUERY_RESULT="\$(dpkg-query -Wf '\${db:Status-Status}' set-distinct-hostname)"
+if [[ "\${PKG_QUERY_RESULT}" == "installed" ]]; then
   set -x
   systemctl enable set-distinct-hostname.service
   set +x
