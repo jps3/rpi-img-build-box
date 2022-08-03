@@ -19,15 +19,15 @@ shopt -u sourcepath
 SORETNIRPD3_ZIP="3dprinteros_client_update.zip"
 SORETNIRPD3_URL="https://client3dprinteros.blob.core.windows.net/releases/updates/rpi/stable3/full_update/${SORETNIRPD3_ZIP}"
 
-SALTSTACK_BRANCH="stable"
+SALTSTACK_BRANCH=""      # default: "stable"
 SALTSTACK_VERSION="3004"
-SALTSTACK_PY_VERSION="py3"
+SALTSTACK_PY_VERSION=""  # default "py3"
 
-SALT_MASTER=""
-SALT_ENABLED="false"
+SALT_MASTER=""           # default: ""
+SALT_ENABLED=""          # default: false
 
 HOSTNAME_PREFIX="testpi"
-PUBKEY_SSH_ROOT=""
+
 
 
 # ---------------------------------------------------------------------- #
@@ -161,7 +161,7 @@ FIRST_USER_PASS="$(pwgen -1 32 1)"
 PUBKEY_SSH_FIRST_USER=""
 PUBKEY_ONLY_SSH="0"
 ENABLE_SSH="1"
-STAGE_LIST="stage0 stage1 stage2 stage2-luaml"
+STAGE_LIST="stage0 stage1 stage2 stage2-luaml stage2-luaml-3dposclient"
 
 DISABLE_FIRST_BOOT_USER_RENAME="1" # introduced with commit 01b2432007766a6a1acc942f62d4ece7b25e560d
 
@@ -174,14 +174,6 @@ log "Added file 'config'"
 # ---------------------------------------------------------------------- #
 
 print_header "stage1/01-sys-tweaks"
-
-# target="stage1/01-sys-tweaks/00-run.sh"
-# sed -E -i \
-#     -e '/FIRST_USER_PASS.* chpasswd/ a passwd -l $FIRST_USER_NAME ' \
-#     -e '/root:root.*chpasswd/ a passwd -l root' \
-#     "${target}"
-# log "Changed ${target} to disable first user"
-
 warn "SKIPPING -- not needed using current pi-gen"
 
 # ---------------------------------------------------------------------- #
@@ -189,16 +181,6 @@ warn "SKIPPING -- not needed using current pi-gen"
 # ---------------------------------------------------------------------- #
 
 print_header "stage2/01-sys-tweaks"
-
-# target="stage2/01-sys-tweaks/00-debconf"
-# sed -i \
-#     -e '/^[^#]/ s/Generic 105-key (Intl) PC/Generic 104-key PC/' \
-#     -e '/^[^#]/ s/select\([[:space:]]\)\{1,\}gb/select\1us/' \
-#     -e '/^[^#]/ s/English (UK)/English (US)/' \
-#     "${target}"
-# log "Changed ${target} to change from GB to US keyboard"
-
-warn "SKIPPING -- not needed using current pi-gen"
 
 target="stage2/01-sys-tweaks/files/console-setup"
 sed -i \
@@ -231,8 +213,8 @@ done
 
 print_header "SKIP and SKIP_IMAGES file flags"
 
-# touch stage{3..5}/SKIP
-# log "Set SKIP flag for stages 3 to 5"
+touch stage{3..5}/SKIP
+log "Set SKIP flag for stages 3 to 5"
 
 find stage{2..5} -type f -name "EXPORT_*" -exec dirname {} \; | \
     uniq | \
@@ -248,17 +230,15 @@ print_header "config"
 
 cat <<EOF >>config
 set -x
-#export TIMEZONE="America/New_York" # defaults to TIMEZONE_DEFAULT
 export ROOT_PASSWORD_LENGTH="22"
-export SALTSTACK_PY_VERSION="${SALTSTACK_PY_VERSION}"
-export SALTSTACK_BRANCH="${SALTSTACK_BRANCH}"
+export SALTSTACK_PY_VERSION="${SALTSTACK_PY_VERSION:-py3}"
+export SALTSTACK_BRANCH="${SALTSTACK_BRANCH:-stable}"
 export SALTSTACK_VERSION="${SALTSTACK_VERSION}"
 export SALT_MASTER="${SALT_MASTER}"
-export SALT_ENABLED="${SALT_ENABLED}"
+export SALT_ENABLED="${SALT_ENABLED:-false}"
 export HOSTNAME_PREFIX="${HOSTNAME_PREFIX}"
 export PUBKEY_SSH_ROOT="${PUBKEY_SSH_ROOT}"
 export SORETNIRPD3_ZIP="${SORETNIRPD3_ZIP}"
-#export DEPLOY_DIR="/vagrant/tmp"
 set +x
 EOF
 log "Created local config file"
