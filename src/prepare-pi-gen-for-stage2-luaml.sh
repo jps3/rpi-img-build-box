@@ -163,6 +163,8 @@ PUBKEY_ONLY_SSH="0"
 ENABLE_SSH="1"
 STAGE_LIST="stage0 stage1 stage2 stage2-luaml"
 
+DISABLE_FIRST_BOOT_USER_RENAME="1" # introduced with commit 01b2432007766a6a1acc942f62d4ece7b25e560d
+
 EOF
 log "Added file 'config'"
 
