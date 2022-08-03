@@ -32,7 +32,8 @@
     docker_version: ""
     docker_group_users:
       - vagrant
-    pigen_commit: "2022-04-04-raspios-bullseye"
+    # pigen_commit: "2022-04-04-raspios-bullseye"
+    pigen_commit: "master"
 
   roles:
     - common
